@@ -2,6 +2,8 @@
 
 By: Marcus Kim
 
+Stuck at home
+
 tasks:
 1. sweep the broom, random number of times 5-20
     tap 
@@ -10,7 +12,7 @@ tasks:
 2. study, random number of times 3-5
     hold down
         bar increases each time
-        
+
 3. cooking, random number of times 3-5
     random letters appear, player taps the letters
         bar increaes each time
