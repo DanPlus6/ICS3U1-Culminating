@@ -20,18 +20,37 @@ let circleRadius = 40;
  */
 function addEventListeners(){
     document.body.addEventListener('mousemove', checkMouseMove);
+    document.body.addEventListener('mousedown', checkMouseDown);
+    document.body.addEventListener('mouseup', checkMouseUp);
 }
 
 /**
  * 
- * @param {MouseEvent} mouseEvent information about the mouse position
+ * @param {MouseEvent} mouseMoveEvent information about the mouse position
  */
-function checkMouseMove(mouseEvent){
-    console.log(`Mouse X: ${mouseEvent.clientX}, Mouse Y: ${mouseEvent.clientY}`);
+function checkMouseMove(mouseMoveEvent){
+    console.log(`Mouse X: ${mouseMoveEvent.clientX}, Mouse Y: ${mouseMoveEvent.clientY}`);
+}
+
+function checkMouseDown(mouseDownEvent){
+    console.log('mouse clicked');
+}
+
+function checkMouseUp(mouseUpEvent){
+    console.log('mouse released');
 }
 
 function draw(){
     BRUSH.beginPath();
     BRUSH.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
     BRUSH.stroke();
+    BRUSH.fillStyle = "red";
+    BRUSH.fill();
+    BRUSH.strokeStyle = "red";
+    BRUSH.stroke();
+}
+
+function start(){
+    draw();
+    addEventListeners();
 }
