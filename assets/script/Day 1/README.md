@@ -16,3 +16,6 @@ tasks:
 3. cooking, random number of times 3-5
     random letters appear, player taps the letters
         bar increaes each time
+
+4. go to bed
+    tap
