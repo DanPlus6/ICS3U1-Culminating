@@ -18,6 +18,8 @@ body {
 .gameclock {
     margin-bottom: 0;
     text-align: center;
+    visibility: none;
+    display: none;
 }
 
 .gameclock h2 {
@@ -99,7 +101,7 @@ body {
 /* Game canvas */
 #game-canvas {
     width: 99.25vw;
-    height: 92vh;
+    height: 99vh;
     border: 5px solid;
     display: block;
 }
