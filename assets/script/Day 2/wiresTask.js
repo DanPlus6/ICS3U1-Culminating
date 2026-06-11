@@ -51,8 +51,13 @@ function checkMouseUp(mouseUpEvent){
 }
 
 function mouseCollision(){
-    if (mouseX > circleX && mouseX < circleX + (circleRadius*2)  && mouseY > circleY && mouseY < circleY + (circleRadius*2)){
+    if (mouseX > (circleX - circleRadius) && mouseX < circleX + (circleRadius*2)  && mouseY > (circleY - circleRadius) && mouseY < circleY + (circleRadius*2)){
         console.log('collison!');
+        if (mouseButton == true){
+            circleX = mouseX;
+            circleY = mouseY;
+            draw();
+        }
     }
 }
 
