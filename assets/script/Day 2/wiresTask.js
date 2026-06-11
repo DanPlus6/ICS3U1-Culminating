@@ -7,6 +7,9 @@
 //get the Canvas from the HTML
 const CANVAS = document.getElementById('game-canvas');
 
+CANVAS.width = CANVAS.clientWidth;
+CANVAS.height = CANVAS.clientHeight;
+
 //get the graphics content from the Canvas for drawing directions
 const BRUSH = CANVAS.getContext('2d');
 
