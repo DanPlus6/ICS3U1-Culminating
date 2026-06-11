@@ -15,6 +15,11 @@ let circleX = 95;
 let circleY = 50;
 let circleRadius = 40;
 
+//information about the mouse status
+let mouseButton = false;
+let mouseX;
+let mouseY;
+
 /**
  * Adds all event listeners to the game
  */
@@ -30,14 +35,25 @@ function addEventListeners(){
  */
 function checkMouseMove(mouseMoveEvent){
     console.log(`Mouse X: ${mouseMoveEvent.clientX}, Mouse Y: ${mouseMoveEvent.clientY}`);
+    mouseX = mouseMoveEvent.clientX;
+    mouseY = mouseMoveEvent.clientY;
+    mouseCollision();
 }
 
 function checkMouseDown(mouseDownEvent){
     console.log('mouse clicked');
+    mouseButton = true;
 }
 
 function checkMouseUp(mouseUpEvent){
     console.log('mouse released');
+    mouseButton = false;
+}
+
+function mouseCollision(){
+    if (mouseX > circleX && mouseX < circleX + (circleRadius*2)  && mouseY > circleY && mouseY < circleY + (circleRadius*2)){
+        console.log('collison!');
+    }
 }
 
 function draw(){
