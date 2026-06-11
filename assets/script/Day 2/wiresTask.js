@@ -16,6 +16,8 @@ const BRUSH = CANVAS.getContext('2d');
 //information about the circle
 let circleX = 95;
 let circleY = 50;
+let originalCircleX = circleX;
+let originalCircleY = circleY;
 let circleRadius = 40;
 
 //information about the mouse status
@@ -51,6 +53,10 @@ function checkMouseDown(mouseDownEvent){
 function checkMouseUp(mouseUpEvent){
     console.log('mouse released');
     mouseButton = false;
+    circleX = originalCircleX;
+    circleY = originalCircleY;
+    draw();
+
 }
 
 function mouseCollision(){
