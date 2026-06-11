@@ -9,6 +9,32 @@
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
+    <div class="controls-panel">
+        <h3>Controls</h3>
+        <p>W / ⬆ — Move Up</p>
+        <p>S / ⬇ — Move Down</p>
+        <p>A / ⬅ — Move Left</p>
+        <p>D / 🡆 — Move Right</p>
+        <br>
+        <p>Space — Pickup Item</p>
+        <br>
+        <p>P — Pause/Resume</p>
+        <p>R — Reset Game</p>
+    </div>
+    <div class="misc-controls-panel">
+        <h3>Misc Controls</h3>
+        <p>B — Do a Barrel Roll</p>
+        <p>End — DO NOT PRESS</p>
+        <small>MAY LEAD TO BUT NOT LIMITED TO:</small>
+        <li>Photosensitive Epilepsy Seizures</li>
+        <li>Generalized Tonic-Clonic Seizures</li>
+        <li>Myoclonic Jerks/Fits</li>
+        <li>Photosensitive Epilepsy (PSE)</li>
+        <li>Unconsciousness or Staring Spells</li>
+        <small>CURIOSITY WILL KILL THE CAT</small><br>
+        <small>YOU HAVE BEEN WARNED</small>
+    </div>
+
     <div class="game-area">
         <div class="gameclock">
             <h2 id="h-gameclock">Time: 0s</h2>
@@ -17,9 +43,23 @@
             <button id="btn-reset-clock">Reset</button>
         </div>
 
-        <canvas id="game-canvas">
-            Graphics not supported, please enable javascript
-        </canvas>
+        <div class="canvas-stage">
+            <canvas id="game-canvas">
+                Graphics not supported, please enable javascript
+            </canvas>
+
+            <div id="win-overlay" class="win-overlay hidden">
+                <h2>Computer Completed!</h2>
+                <p id="win-message"></p>
+                <img id="win-computer-image" alt="Completed computer build">
+            </div>
+        </div>
+
+        <div class="game-text-display">
+            <p id="text-ln1"></p>
+            <p id="text-ln2"></p>
+            <p id="text-ln3"></p>
+        </div>
     </div>
 
     <script type="module" src="assets/script/main.js"></script>

@@ -53,42 +53,7 @@ const CHARACTERS = [
                 'Extra buttons can also help in some games by making actions easier to reach.'
             ]
         }
-    },
-    {
-        id: 'nerd',
-        label: 'Student',
-        description: 'erm actually 🤓👆...',
-        spriteSrc: 'assets/img/PlayerAvatar/nerd.png',
-        width: 140,
-        height: 140,
-        speed: 6,
-        bank: {
-            'cpu' : [
-                'For a student, a basic modern CPU such as an Intel Core i3 or AMD Ryzen 3 is usually enough for schoolwork, web browsing, and documents.',
-                'Most classroom programs are lightweight, so students usually do not need an expensive high-performance processor.'
-            ],
-            'gpu' : [
-                'A student usually does not need a powerful dedicated GPU because school tasks like research, slideshows, and writing do not use much graphics power.',
-                'Integrated graphics are often enough unless the student also does editing, 3D work, or gaming.'
-            ],
-            'ram' : [
-                'Students should have enough RAM to keep browser tabs, documents, and learning apps open without slowdown.',
-                '8 GB works for light use, while 16 GB gives a smoother experience for multitasking.'
-            ],
-            'ssd' : [
-                'An SSD is very useful for students because it makes the computer boot faster and opens assignments and apps quickly.',
-                'It also helps keep the system feeling responsive during everyday school use.'
-            ],
-            'motherboard' : [
-                'A student mainly needs a reliable motherboard that works with the chosen CPU and provides the basic ports needed for school accessories.',
-                'It does not need to be fancy, but it should be dependable and easy to upgrade later if needed.'
-            ],
-            'mouse' : [
-                'For a student, a mouse should be simple, comfortable, and dependable for long homework sessions.',
-                'Comfort and ease of use matter more than gaming features or flashy design.'
-            ]
-        }
-    },
+    }
 ];
 /** the character config the player chose on the selection screen */
 let userType;
