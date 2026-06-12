@@ -11,13 +11,13 @@ export class Bed extends Entity {
      * the screen fades to black and day1End is set to true.
      *
      * @param {Object} args
-     * @param {string}  [args.path]    sprite path for the bed
-     * @param {number}  [args.width]   width  of the bed sprite
-     * @param {number}  [args.height]  height of the bed sprite
-     * @param {number}  [args.x]       initial x position
-     * @param {number}  [args.y]       initial y position
-     * @param {Canvas}  args.canvas    active Canvas instance
-     * @param {Object}  args.gameState shared game-state object  { day1End: false }
+     * @param {string}  [args.path] sprite path for the bed
+     * @param {number}  [args.width] width  of the bed sprite
+     * @param {number}  [args.height] height of the bed sprite
+     * @param {number}  [args.x] initial x position
+     * @param {number}  [args.y] initial y position
+     * @param {Canvas}  args.canvas active Canvas instance
+     * @param {Object}  args.gameState shared game-state object 
      */
     constructor({ path = 'assets/img/Entities/bed/bed.png', width = 128, height = 128, x = 0, y = 0, canvas, gameState }) {
         super({ path, width, height });
@@ -138,7 +138,7 @@ export class Bed extends Entity {
     // ─────────────────────────────────────────────
 
     /** Begin the fade-to-black sequence */
-    _startFade() {
+    #startFade() {
         this.fading       = true;
         this.promptVisible = false;
         this.fadeAlpha    = 0;
@@ -148,7 +148,7 @@ export class Bed extends Entity {
      * Advance fade animation one tick.
      * When fully black, mark day1End and stop ticking.
      */
-    _tickFade() {
+    #tickFade() {
         this.fadeAlpha = Math.min(1, this.fadeAlpha + this.FADE_SPEED);
 
         if (this.fadeAlpha >= 1) {
