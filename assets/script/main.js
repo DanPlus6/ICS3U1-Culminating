@@ -1,6 +1,6 @@
 'use strict';
 
-import { CharacterSelect } from './Classes/UI/CharacterSelect.js';
+import { CharacterSelect } from './Classes/UI/StartScreen.js';
 import { InputManager } from './Classes/Player/InputManager.js';
 import { ActionMap } from './Classes/Player/ActionMap.js';
 import { Entity } from './Classes/Entities/Entity.js';
