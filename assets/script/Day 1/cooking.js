@@ -1,4 +1,0 @@
-/**MARCUS K. */
-
-'use strict';
-

@@ -321,3 +321,80 @@ function refreshGame() {
 
     gameTick++;
 }
+
+
+// ─── In main.js ───────────────────────────────────────────────
+
+// 1. Import
+import { CookTask } from './Classes/Tasks/CookTask.js';
+
+// 2. Declare alongside other task vars
+let cookTask;
+
+// 3. Inside buildGame():
+function buildGame() {
+    // ... existing player + bed + sweepTask + studyTask setup ...
+
+    cookTask = new CookTask({
+        canvas:     CV,
+        onComplete: () => {
+            console.log('Cook task complete!');
+            // All Day 1 tasks done — player can now walk to bed
+            // (bed interaction is always listening via bed.update())
+        }
+    });
+
+    // cookTask.start() is called from studyTask's onComplete
+}
+
+// 4. Updated studyTask onComplete to chain into cookTask:
+studyTask = new StudyTask({
+    canvas:     CV,
+    onComplete: () => {
+        console.log('Study task complete!');
+        cookTask.start();   // chain into cook task
+    }
+});
+
+// 5. Inside refreshGame():
+function refreshGame() {
+    // ── Input ─────────────────────────────────────────────
+    const interactDown = actMapper.isActive('interact') && !interactWasDown;
+    interactWasDown    = actMapper.isActive('interact');
+
+    // ── Update ────────────────────────────────────────────
+    // Block player movement while any task minigame is active
+    const anyTaskActive = sweepTask.active || studyTask.active || cookTask.active;
+
+    if (!anyTaskActive) {
+        PL.update();
+        if (PL.oldX !== PL.x || PL.oldY !== PL.y) CV.update(PL);
+    }
+
+    sweepTask.update(iptManager);
+    studyTask.update(iptManager);
+    cookTask.update(iptManager);
+
+    bed.update(PL, interactDown);
+
+    // ── Render ────────────────────────────────────────────
+    // cookTask.draw() paints a full-screen BG so call it FIRST
+    // so room entities from clearAndDraw() still show on non-cook frames,
+    // but during cooking the BG covers the room intentionally.
+    CV.clearAndDraw();
+    cookTask.draw();      // full-screen BG + centred arrow prompt
+    sweepTask.draw();     // centred prompt only  (only active during sweep)
+    studyTask.draw();     // centred prompt only  (only active during study)
+    bed.drawPrompt();
+    bed.drawFade();
+
+    // ── Day transition check ──────────────────────────────
+    if (gameState.day1End) {
+        clearInterval(gameRefresher);
+        gameRefresher = null;
+        gameActive    = false;
+        // TODO: loadDay2();
+    }
+
+    gameTick++;
+}
