@@ -97,6 +97,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
+        phoneNumbers = [];
     }
     else if (collisionVerify){
         BRUSH.beginPath();
@@ -191,6 +192,7 @@ function checkClick(mouseDownEvent){
 
 function checkRelease(mouseUpEvent){
     mouseClicked = false;
+    BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
     drawButtons();
 }
 
@@ -281,6 +283,7 @@ function drawButtons(){
     BRUSH.fillText("9", rightButtonX - 10, topButtonY + 15);
     BRUSH.fillText("✓", rightButtonX - 10, lastButtonY + 15);
     BRUSH.fillText("✗", leftButtonX - 10, lastButtonY + 15);
+    BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width/5)*2)+65, 100);
 }
 
 function trackMouseMove(mouseMoveEvent){
@@ -289,9 +292,9 @@ function trackMouseMove(mouseMoveEvent){
 }
 
 function start(){
+    phoneNumbers = [];
     drawButtons();
     addEventListeners();
-    phoneNumbers = [];
 }
 
 window.addEventListener('load', start);
