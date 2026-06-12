@@ -260,7 +260,7 @@ function mouseCollision(rgbX, rgbY){
 /**
  * Draws the wires on the Canvas
  */
-function drawWires(){
+function draw(){
     BRUSH.beginPath();
     BRUSH.arc(redStartX, redStartY, circleRadius, 0, 2 * Math.PI);
     BRUSH.strokeStyle = "red";

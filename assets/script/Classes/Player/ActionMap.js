@@ -15,8 +15,8 @@ export class ActionMap {
             mvLeft: ['ArrowLeft', 'A', 'a'],
             mvRight: ['ArrowRight', 'D', 'd'],
 
-            pickupItem: [' '],
-            interact: ['E', 'e']
+            interact: ['E', 'e'],
+            pickupItem: [' ']
         };
     }
 
