@@ -7,10 +7,6 @@ import { Entity } from './Classes/Entities/Entity.js';
 import { Player } from './Classes/Player/Player.js';
 import { Canvas } from './Classes/GameScreen/Canvas.js';
 
-import { BarrelRoll } from './functions/BarrelRoll.js';
-import { Epilepsy } from './functions/Epilepsy.js';
-
-
 // +++++++++++++++++ Init variables ++++++++++++++++++++
 // ------------ Canvas -----------
 /** game screen/canvas */
@@ -26,78 +22,19 @@ const CHARACTERS = [
         spriteSrc: 'assets/img/PlayerAvatar/trollge.png',
         width: 140,
         height: 140,
-        speed: 8,
-        bank: {
-            'cpu' : [
-                'A gamer benefits from a fast mid-range or high-end CPU because games need strong single-core speed for smooth frame rates.',
-                'Modern games also use multiple cores, so 6 to 8 cores is a strong target for gaming and background apps like voice chat or recording.'
-            ],
-            'gpu' : [
-                'The GPU matters a lot for gamers because it renders the graphics, lighting, textures, and visual effects you see on screen.',
-                'Higher resolutions and higher graphics settings need a stronger graphics card, especially for ray tracing or very high refresh rate monitors.'
-            ],
-            'ram' : [
-                'Gamers should usually aim for at least 16 GB of RAM so the game, operating system, and background apps can all run comfortably.',
-                'If the player likes modded games, streaming, or heavy multitasking, 32 GB can be even better.'
-            ],
-            'ssd' : [
-                'An SSD helps games load much faster, reduces waiting times, and makes the whole system feel more responsive.',
-                'Large modern games take a lot of space, so a gamer often wants a bigger SSD to store several games at once.'
-            ],
-            'motherboard' : [
-                'A gamer needs a motherboard that supports the chosen CPU, enough RAM slots, and useful features like fast USB ports and good cooling support.',
-                'It should also have room for future upgrades such as more storage or a better graphics card.'
-            ],
-            'mouse' : [
-                'For gaming, a mouse should feel comfortable, respond quickly, and have a sensor that tracks movement accurately.',
-                'Extra buttons can also help in some games by making actions easier to reach.'
-            ]
-        }
+        speed: 8
     }
 ];
 /** the character config the player chose on the selection screen */
 let userType;
 /** player object */
 let PL;
-
-// ----------- Hardware Collection ------------
-/** bank storing general information about a computer hardware part that does not vary depending on user type */
-const BANK = {
-    'cpu' : 'You have picked up the CPU. The CPU is the main processor of the computer and follows instructions, performs calculations, and helps run programs.',
-    'gpu' : 'You have picked up the GPU. The GPU is responsible for rendering graphics, images, video, and visual effects, and it is especially important for games and 3D work.',
-    'ram' : 'You have picked up the RAM. RAM is short-term memory that stores data the computer is actively using so programs can access it quickly.',
-    'ssd' : 'You have picked up the SSD. An SSD is long-term storage that keeps files, programs, and the operating system saved even when the computer is turned off.',
-    'motherboard' : 'You have picked up the motherboard. The motherboard is the main circuit board that connects all the computer parts together so they can communicate.',
-    'mouse' : 'You have picked up the mouse. A mouse is an input device used to move the pointer, click on items, and interact with programs on the computer.'
-}
-/** ordered list of hardware part ids to spawn on the canvas */
-const HARDWARE_TYPES = Object.keys(BANK);
-/** track how many items the user has picked up so far */
-let itemsPicked;
 /** active spawned hardware entities */
 let hardwareEntities;
 /** prevent held space from re-picking items every frame */
 let pickupPressed;
 
-// Hints
-/** floating hint element created in script */
-let controlsHintEl;
-/** single control hint shown when the player is stuck */
-const CONTROL_HINT = 'Hint: Use W A S D or the arrow keys to move.';
-/** single pickup hint shown when the player hasn't picked anything up */
-const PICKUP_HINT = 'Walk into hardware to inspect it, then press Space to pick it up.';
-/** track time when player last moved */
-let lastMoveTime;
-/** track time when player last picked up a hardware part */
-let lastPickupTime;
-/** track if player has ever moved */
-let hasEverMoved;
-
 // HTML targets
-const LINE_1 = document.getElementById('text-ln1');
-const LINE_2 = document.getElementById('text-ln2');
-const LINE_3 = document.getElementById('text-ln3');
-const H_ITEMS_COUNTER = document.getElementById('h-itemspicked');
 const DIV_WIN_OVERLAY = document.getElementById('win-overlay');
 const P_WIN_MESSAGE = document.getElementById('win-message');
 const IMG_WIN_COMPUTER = document.getElementById('win-computer-image');
@@ -110,8 +47,6 @@ const H_GAME_CLOCK = document.getElementById('h-gameclock');
 
 /** variable to track if game is running (not paused) */
 let gameActive;
-/** variable to store game's clock time in seconds  */
-let gameTime;
 /** variable storing game refresher's timeout timer */
 let gameRefresher;
 /** interval between game refreshes/"frames" in miliseconds */
@@ -126,39 +61,6 @@ let charSelecting = false;
 let iptManager;
 /** action map that maps keyboard events to player actions (e.g. movements) */
 let actMapper;
-
-// Miscellaneous Global Properties
-/** barrel roll state */
-globalThis.barrelRolling = false;
-/** epilepsy state */
-globalThis.givingEpilepsy = false;
-/** epilepsy "warning" state */
-globalThis.epilepsyWarning = false;
-/** whether the user has been warned */
-globalThis.epilepsyWarned = false;
-
-/** create the floating hint element once without relying on pre-existing HTML */
-function ensureControlsHint() {
-    if (controlsHintEl) return;
-
-    controlsHintEl = document.createElement('div');
-    controlsHintEl.className = 'controls-hint hidden';
-    document.body.appendChild(controlsHintEl);
-}
-
-/** show a hint message in the floating hint element */
-function showControlsHint(message) {
-    ensureControlsHint();
-    controlsHintEl.textContent = message;
-    controlsHintEl.classList.remove('hidden');
-}
-
-/** hide the floating hint element */
-function hideControlsHint() {
-    ensureControlsHint();
-    controlsHintEl.classList.add('hidden');
-}
-
 
 // ++++++++++++++++++++++ Game Essentials +++++++++++++++++++++++
 /** toggles the game clock and pauses/unpauses the game */
@@ -191,7 +93,6 @@ function resetGame() {
 
     // Game clock
     gameActive = false;
-    gameTime = 0;
     gameTick = 0;
     H_GAME_CLOCK.textContent = 'Time: 0s';
     BTN_TOGGLE_CLOCK.textContent = 'Start';
@@ -205,25 +106,13 @@ function resetGame() {
     actMapper  = new ActionMap(iptManager);
 
     // Hardware collection
-    itemsPicked = 0;
     hardwareEntities = [];
     pickupPressed = false;
 
-    LINE_1.textContent = '';
-    LINE_2.textContent = '';
-    LINE_3.textContent = '';
-
-    H_ITEMS_COUNTER.textContent = '';
     P_WIN_MESSAGE.textContent = '';
 
     IMG_WIN_COMPUTER.removeAttribute('src');
     DIV_WIN_OVERLAY.classList.add('hidden');
-    
-    lastMoveTime  = 0;
-    lastPickupTime = 0;
-    hasEverMoved  = false;
-
-    hideControlsHint();
 }
 
 /** start a fresh active run after the player has been built */
@@ -242,10 +131,6 @@ function showWinOverlay() {
     if (gameRefresher) clearInterval(gameRefresher);
     gameRefresher = null;
     BTN_TOGGLE_CLOCK.textContent = 'Start';
-
-    P_WIN_MESSAGE.textContent = `You built the computer in ${gameTime} seconds.`;
-    IMG_WIN_COMPUTER.src = `assets/img/Entities/${userType.id}/computer.png`;
-    DIV_WIN_OVERLAY.classList.remove('hidden');
 }
 
 /** restart the game as if it's the beginning */
@@ -322,25 +207,6 @@ function spawnHardwareEntities() {
 }
 
 /**
- * Show three text lines for the currently touched hardware entity
- * @param {Entity|null} entity touched hardware entity
- */
-function displayHardwareInfo(entity) {
-    // clear text display when the player is not touching any hardware.
-    if (!entity) {
-        LINE_1.textContent = '';
-        LINE_2.textContent = '';
-        LINE_3.textContent = '';
-        return;
-    }
-
-    const specificBank = userType.bank[entity.id] || [];
-    LINE_1.textContent = BANK[entity.id] || '';
-    LINE_2.textContent = specificBank[0] || '';
-    LINE_3.textContent = specificBank[1] || '';
-}
-
-/**
  * Get all hardware entities the player is currently touching
  * @returns {Entity[]} touched hardware entities
  */
@@ -353,8 +219,6 @@ function handleHardwareInteractions() {
     const touchedHardware = getTouchedHardware();
     const infoTarget = touchedHardware[0] || null;
 
-    displayHardwareInfo(infoTarget);
-
     // only process pickup logic while the pickup key is being held.
     if (actMapper.isActive('pickupItem')) {
         // Only count the pickup once per key press.
@@ -362,43 +226,15 @@ function handleHardwareInteractions() {
             const touchedSet = new Set(touchedHardware);
 
             for (const entity of touchedHardware) {
-                itemsPicked++;
                 CV.rmEntity(entity);
             }
-            lastPickupTime = gameTime;
 
             hardwareEntities = hardwareEntities.filter(entity => !touchedSet.has(entity));
-            H_ITEMS_COUNTER.textContent = `Items Picked up: ${itemsPicked}/${HARDWARE_TYPES.length}`;
-            hideControlsHint();
-
-            // end run once every required hardware part has been collected.
-            if (itemsPicked === HARDWARE_TYPES.length) showWinOverlay();
         }
         pickupPressed = true;
     }
     else {
         pickupPressed = false;
-    }
-}
-
-/** show control hints only if the player appears to be stuck/not know how to play the game */
-function handleControlsHints() {
-    if (!gameActive || charSelecting || itemsPicked >= HARDWARE_TYPES.length) {
-        hideControlsHint();
-        return;
-    }
-
-    const timeSinceMove = gameTime - lastMoveTime;
-    const timeSincePickup = gameTime - lastPickupTime;
-
-    // if player has been idle for 5s, remind them how to move
-    if (timeSinceMove >= 5) {
-        showControlsHint(CONTROL_HINT);
-    } // if player is moving but hasn't collected anything for 10s
-    else if (hasEverMoved && timeSincePickup >= 10) {
-        showControlsHint(PICKUP_HINT);
-    } else {
-        hideControlsHint();
     }
 }
 
@@ -421,13 +257,6 @@ function refreshGame() {
     // If enough ticks have passed (a second has elapsed), increment the visual game clock
     if (gameTick === 0) gameTime++;
     H_GAME_CLOCK.textContent = `Time: ${gameTime.toString()}s`;
-
-    // Miscellaneous
-    // Trigger the barrel roll effect only when its hotkey is active.
-    if (actMapper.isActive('barrelRoll')) BarrelRoll();
-    // Give the user a jumpscare if they press the key they were told not to press
-    if (actMapper.isActive('epilespy')) Epilepsy();
-    handleControlsHints();
 }
 
 /** attaches base event listeners that persist between game resets */
@@ -450,15 +279,12 @@ function addBaseListeners() {
 // ++++++++++++++++++++ Initialization +++++++++++++++++++++
 /** page onload callback */
 function init() {
-    ensureControlsHint();
     addBaseListeners();
     restartGame();
 }
 
 /** build the user set by the selection screen */
 function build() {
-    H_ITEMS_COUNTER.textContent = `Items Picked up: ${itemsPicked}/${HARDWARE_TYPES.length}`;
-
     // Build player from whichever character the player selected
     PL = new Player({ 
         path: userType.spriteSrc, cv: CV, actMap: actMapper,

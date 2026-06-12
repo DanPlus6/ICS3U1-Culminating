@@ -15,11 +15,7 @@ export class ActionMap {
             mvLeft: ['ArrowLeft', 'A', 'a'],
             mvRight: ['ArrowRight', 'D', 'd'],
 
-            pickupItem: [' '],
-
-            // misc actions
-            barrelRoll: ['b', 'B'],
-            epilespy: ['End']
+            pickupItem: [' ']
         };
     }
 
