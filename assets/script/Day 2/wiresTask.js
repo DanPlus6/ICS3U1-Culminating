@@ -7,6 +7,7 @@
 //get the Canvas from the HTML
 const CANVAS = document.getElementById('game-canvas');
 
+//get the Canvas height and width
 CANVAS.width = CANVAS.clientWidth;
 CANVAS.height = CANVAS.clientHeight;
 
@@ -69,6 +70,7 @@ let collisionAmount = 0;
 //amount of lines made
 let linesAmount = 0;
 
+//check if the mouse is currently collided with a starting wire
 let collided = false;
 
 /**
@@ -81,14 +83,16 @@ function addEventListeners(){
 }
 
 /**
- * 
+ * Gets the mouse position and moves the starting wire to the mouse
  * @param {MouseEvent} mouseMoveEvent information about the mouse position
  */
 function checkMouseMove(mouseMoveEvent){
     console.log(`Mouse X: ${mouseMoveEvent.clientX}, Mouse Y: ${mouseMoveEvent.clientY}`);
     mouseX = mouseMoveEvent.clientX;
     mouseY = mouseMoveEvent.clientY;
+    //check if the mouse button is pressed
     if (mouseButton){
+        //check if the mouse has no other collisions
         if (!collided){
             redStartCollide = mouseCollision(redStartX, redStartY);
             yellowStartCollide = mouseCollision(yellowStartX, yellowStartY);
@@ -102,21 +106,25 @@ function checkMouseMove(mouseMoveEvent){
         blueStartCollide = false;
         greenStartCollide = false;
     }
+    //check if the red starting wire has been collided
     if (redStartCollide){
         redStartX = mouseX;
         redStartY = mouseY;
         draw();
     }
+    //check if the yellow starting wire has been collided
     if (yellowStartCollide){
         yellowStartX = mouseX;
         yellowStartY = mouseY;
         draw();
     }
+    //check if the blue starting wire has been collided
     if (blueStartCollide){
         blueStartX = mouseX;
         blueStartY = mouseY;
         draw();
     }
+    //check if the green starting wire has been collided
     if (greenStartCollide){
         greenStartX = mouseX;
         greenStartY = mouseY;
@@ -124,6 +132,10 @@ function checkMouseMove(mouseMoveEvent){
     }
 }
 
+/**
+ * Checks if the mouse is pressed
+ * @param {MouseEvent} mouseDownEvent Information about if the mouse is pressed
+ */
 function checkMouseDown(mouseDownEvent){
     console.log('mouse clicked');
     mouseButton = true;
@@ -131,38 +143,52 @@ function checkMouseDown(mouseDownEvent){
     yellowStartCollide = mouseCollision(yellowStartX, yellowStartY);
     blueStartCollide = mouseCollision(blueStartX, blueStartY);
     greenStartCollide = mouseCollision(greenStartX, greenStartY);
+    //check if any of the starting wires are collided with the mouse
     if (redStartCollide || yellowStartCollide || blueStartCollide || greenStartCollide){
         linesAmount++;
     }   
 }
 
+/**
+ * Checks if the mouse is released, and check if the wiring is at the correct position
+ * @param {MouseEvent} mouseUpEvent Information about if the mouse is released
+ */
 function checkMouseUp(mouseUpEvent){
     console.log('mouse released');
     mouseButton = false;
+    //check if red wire has not already been completed
     if (!redCompleted){
         redEndCollide = mouseCollision(endX, redEnd);
+        //check if the mouse collides with both the end and starting wire
         if (redEndCollide && redStartCollide){
             collisionAmount++;
         }
     }
+    //check if the yellow wire has not already been completed
     if (!yellowCompleted){
         yellowEndCollide = mouseCollision(endX, yellowEnd);
+        //check if the mouse collides with both the end and starting wire
         if (yellowEndCollide && yellowStartCollide){
             collisionAmount++;
         }
     }
+    //check if the blue wire has not already been completed
     if (!blueCompleted){
         blueEndCollide = mouseCollision(endX, blueEnd);
+        //check if the mouse collides with both the end and starting wire
         if (blueEndCollide && blueStartCollide){
             collisionAmount++;
         }
     }
+    //check if the green wire has not already been completed
     if (!greenCompleted){
         greenEndCollide = mouseCollision(endX, greenEnd);
+        //check if the mouse collides with both the end and starting wire
         if (greenEndCollide && greenStartCollide){
             collisionAmount++;
         }
     }
+    //check if the amount of lines made are more than the amount of lines that collide with the end point
     if (linesAmount > collisionAmount){
         linesAmount = 0;
         collisionAmount = 0;
@@ -195,22 +221,33 @@ function checkMouseUp(mouseUpEvent){
         draw();
     }
     else {
+        //check if the wire is completed
         if (redEndCollide){
             redCompleted = true;
         }
+        //check if the wire is completed
         if (yellowEndCollide){
             yellowCompleted = true;
         }
+        //check if the wire is completed
         if (blueEndCollide){
             blueCompleted = true;
         }
+        //check if the wire is completed
         if (greenEndCollide){
             greenCompleted = true;
         }
     }
 }
 
+/**
+ * Checks if the mouse is colliding with the rgb coloured wires
+ * @param {number} rgbX The X position of the rgb wire
+ * @param {number} rgbY The Y position of the rgb wire
+ * @returns true if there is a collsion, false if not
+ */
 function mouseCollision(rgbX, rgbY){
+    //check if the mouse is inside the coloured wires
     if (mouseX > rgbX - circleRadius && mouseX < rgbX + circleRadius  && mouseY > rgbY - circleRadius && mouseY < rgbY + circleRadius){
         collided = true;
         return true;
@@ -220,6 +257,9 @@ function mouseCollision(rgbX, rgbY){
     }
 }
 
+/**
+ * Draws the wires on the Canvas
+ */
 function draw(){
     BRUSH.beginPath();
     BRUSH.arc(redStartX, redStartY, circleRadius, 0, 2 * Math.PI);
@@ -271,10 +311,15 @@ function draw(){
     BRUSH.fill();
 }
 
+/**
+ * Randomizes the starting positions of both the wire ends and starts
+ */
 function randomizeStarts(){
     let pos;
+    //traverses through the actualStarts array to assign a value to each element
     for (let i = 0; i < actualStarts.length; i++){
         pos = Math.floor(Math.random() * (4));
+        //check if the randomized rgbyStarts element has already been chosen
         while (rgbyStarts[pos] == 0){
             pos = Math.floor(Math.random() * (4));
         }
@@ -293,8 +338,10 @@ function randomizeStarts(){
 
 function randomizeEnds(){
     let pos;
+    //traverses through the actualEnds array to assign a value to each element
     for (let i = 0; i < actualEnds.length; i++){
         pos = Math.floor(Math.random() * (4));
+        //check if the randomized rgbyEnds element has already been chosen
         while (rgbyEnds[pos] == 0){
             pos = Math.floor(Math.random() * (4));
         }
@@ -307,6 +354,9 @@ function randomizeEnds(){
     yellowEnd = actualEnds[3];
 }
 
+/**
+ * Starts the code
+ */
 function start(){
     randomizeStarts();
     randomizeEnds();
