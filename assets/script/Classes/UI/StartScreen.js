@@ -38,8 +38,12 @@ export class StartScreen {
         startBtn.className = 'ss-button';
         startBtn.textContent = 'Start Game';
         startBtn.addEventListener('click', () => {
-            this.onStart();
-            this.hide();
+            this.overlay.classList.add('starting');
+
+            setTimeout(() => {
+                this.onStart();
+                this.hide();
+            }, 250);
         });
         this.overlay.appendChild(startBtn);
 
@@ -115,13 +119,17 @@ export class StartScreen {
 
                 transform: scale(1.05);
             }
-
-            #start-screen-overlay:has(.ss-button:hover) * {
-                font-family: 'NIGHTMARE PILLS', sans-serif !important;
-            }
-
+            
             .ss-button:active {
                 transform: scale(0.98);
+            }
+
+            #start-screen-overlay * {
+                transition: font-family 0.15s ease;
+            }
+                
+            #start-screen-overlay.starting * {
+                font-family: 'Nightmare Pills', sans-serif !important;
             }
         `;
 
