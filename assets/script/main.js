@@ -192,3 +192,63 @@ function refreshGame() {
 
     gameTick++;
 }
+
+
+
+
+// ─── In main.js ───────────────────────────────────────────────
+
+// 1. Import
+import { SweepTask } from './Classes/Tasks/SweepTask.js';
+
+// 2. Declare alongside other task/entity vars
+let sweepTask;
+
+// 3. Inside buildGame(), after existing setup:
+function buildGame() {
+    // ... existing player + bed setup ...
+
+    sweepTask = new SweepTask({
+        canvas:     CV,
+        onComplete: () => {
+            console.log('Sweep task complete!');
+            // TODO: trigger next Day 1 task (study task)
+        }
+    });
+
+    sweepTask.start(); // Day 1 begins immediately with sweeping
+}
+
+// 4. Inside refreshGame():
+function refreshGame() {
+    // ── Input (existing one-shot interact tracker stays) ──
+    const interactDown  = actMapper.isActive('interact') && !interactWasDown;
+    interactWasDown     = actMapper.isActive('interact');
+
+    // ── Update ────────────────────────────────────────────
+    // Only let the player move freely when no task is active
+    if (!sweepTask.active) {
+        PL.update();
+        if (PL.oldX !== PL.x || PL.oldY !== PL.y) CV.update(PL);
+    }
+
+    sweepTask.update(iptManager);   // pass the raw InputManager
+
+    bed.update(PL, interactDown);
+
+    // ── Render ────────────────────────────────────────────
+    CV.clearAndDraw();
+    sweepTask.draw();   // prompt image + progress counter — drawn on top
+    bed.drawPrompt();
+    bed.drawFade();
+
+    // ── Day transition check ──────────────────────────────
+    if (gameState.day1End) {
+        clearInterval(gameRefresher);
+        gameRefresher = null;
+        gameActive    = false;
+        // TODO: loadDay2();
+    }
+
+    gameTick++;
+}

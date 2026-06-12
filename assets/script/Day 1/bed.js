@@ -1,3 +1,5 @@
+/**MARCUS K. */
+
 'use strict';
 
 import { Entity } from '../Entities/Entity.js';
