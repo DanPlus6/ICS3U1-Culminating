@@ -120,3 +120,5 @@ function drawButtons(){
 function start(){
     drawButtons();
 }
+
+window.addEventListener('load', start);
