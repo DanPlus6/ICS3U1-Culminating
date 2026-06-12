@@ -31,5 +31,5 @@ export const GAME_CONFIG = {
 
     // Game state
     GAME_TITLE: 'Seishinbyo',
-    GAME_SUBTITLE: 'Press Start'
+    GAME_SUBTITLE: 'ad finem mentis'
 };

@@ -60,13 +60,14 @@ export class StartScreen {
         const style = document.createElement('style');
         style.id = 'start-screen-styles';
         style.textContent = `
+            @import url('https://fonts.cdnfonts.com/css/horror-whisper');
+
             #start-screen-overlay {
                 position: fixed;
                 inset: 0;
                 z-index: 100;
                 background: rgba(20, 20, 20, 0.95);
                 backdrop-filter: blur(4px);
-
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -76,15 +77,17 @@ export class StartScreen {
 
             .ss-title {
                 color: #fff;
+                font-family: 'Horror Whisper', sans-serif;
                 font-size: 3.5rem;
                 font-weight: bold;
                 letter-spacing: 0.15em;
-                text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
                 margin: 0;
+                animation: flicker 0.15s infinite;
             }
 
             .ss-subtitle {
                 color: #aaa;
+                font-family: 'Horror Whisper', sans-serif;
                 font-size: 1.2rem;
                 letter-spacing: 0.08em;
                 margin: 0;
@@ -96,16 +99,17 @@ export class StartScreen {
                 font-weight: bold;
                 letter-spacing: 0.06em;
                 color: #fff;
-                background: rgba(100, 150, 255, 0.8);
-                border: 2px solid rgba(100, 150, 255, 1);
+                background: rgba(33, 38, 49, 0.8);
+                border: 2px solid rgb(130, 135, 148);
                 border-radius: 8px;
                 cursor: pointer;
                 transition: all 0.2s ease;
             }
 
             .ss-button:hover {
-                background: rgba(100, 150, 255, 1);
-                box-shadow: 0 0 20px rgba(100, 150, 255, 0.6);
+                background: rgba(85, 28, 4, 1);
+                box-shadow: 0 0 20px rgba(192, 46, 20, 0.6);
+                border: 2px solid rgba(199, 25, 25, 1);
                 transform: scale(1.05);
             }
 
