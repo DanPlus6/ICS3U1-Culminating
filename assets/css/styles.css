@@ -22,7 +22,6 @@ body {
 canvas {
     width: 99vw;
     height: 99vh;
-    border: 5px solid;
     display: block;
 }
 
