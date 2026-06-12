@@ -4,7 +4,6 @@ By: David Fu
 
 ## TODO
 
-- sanity bar
 - all in his mind
 - every 6 seconds, water drop sound
 - every 14 seconds 1/5 chance of footstep sounds on wood
