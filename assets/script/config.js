@@ -19,10 +19,10 @@ export const GAME_CONFIG = {
     // Characters
     CHARACTERS: [
         {
-            id: 'protagonist',
-            label: 'Character',
-            description: 'Your game character here',
-            spriteSrc: 'assets/img/player.png',
+            id: 'mc',
+            label: 'Shinichi',
+            description: '████████ ████',
+            spriteSrc: 'assets/img/trollge.png', // TODO: add actual sprite
             width: 140,
             height: 140,
             speed: 8
