@@ -6,16 +6,14 @@ Stuck at home
 
 tasks:
 1. sweep the broom, random number of times 5-20
-    tap 
-        bar increases slowly
+    tap left and right arrows 
 
-2. study, random number of times 3-5
-    hold down
-        bar increases each time
+2. study, write, a random number of times 3-5
+    hold up arrow
 
 3. cooking, random number of times 3-5
-    random letters appear, player taps the letters
-        bar increaes each time
+    random arrow keys appear, player taps the corresponding arrows
 
-4. go to bed
-    tap
+4. go to bed, fade black screen, next day
+    tap interact button
+
