@@ -14,11 +14,17 @@ CANVAS.height = CANVAS.clientHeight;
 const BRUSH = CANVAS.getContext('2d');
 
 //information about the circle
-let circleX = 95;
-let circleY = 50;
-let originalCircleX = circleX;
-let originalCircleY = circleY;
 let circleRadius = 40;
+let startX = 95;
+let endX = 850;
+let originalStartX = startX;
+let originalEndX = endX
+let redStart = 50;
+let originalRedStart = redStart;
+let redStartCollide = false;
+let redEnd = 50;
+let originalRedEnd = redEnd;
+let redEndCollide = false;
 
 //information about the mouse status
 let mouseButton = false;
@@ -42,7 +48,17 @@ function checkMouseMove(mouseMoveEvent){
     console.log(`Mouse X: ${mouseMoveEvent.clientX}, Mouse Y: ${mouseMoveEvent.clientY}`);
     mouseX = mouseMoveEvent.clientX;
     mouseY = mouseMoveEvent.clientY;
-    mouseCollision();
+    if (mouseButton){
+        redStartCollide = mouseCollision(startX, redStart);
+    }
+    else {
+        redStartCollide = false;
+    }
+    if (redStartCollide){
+        startX = mouseX;
+        redStart = mouseY;
+        draw();
+    }
 }
 
 function checkMouseDown(mouseDownEvent){
@@ -53,26 +69,35 @@ function checkMouseDown(mouseDownEvent){
 function checkMouseUp(mouseUpEvent){
     console.log('mouse released');
     mouseButton = false;
-    circleX = originalCircleX;
-    circleY = originalCircleY;
-    draw();
-
+    redEndCollide = mouseCollision(endX, redEnd);
+    if (!redEndCollide){
+        redStartCollide = false;
+        startX = originalStartX;
+        redStart = originalRedStart;
+        BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
+        draw();
+    }
+    else {
+        console.log('collide');
+    }
 }
 
-function mouseCollision(){
-    if (mouseX > (circleX - circleRadius) && mouseX < circleX + (circleRadius*2)  && mouseY > (circleY - circleRadius) && mouseY < circleY + (circleRadius*2)){
-        console.log('collison!');
-        if (mouseButton == true){
-            circleX = mouseX;
-            circleY = mouseY;
-            draw();
-        }
+function mouseCollision(objX, objY){
+    if (mouseX > objX - circleRadius && mouseX < objX + circleRadius  && mouseY > objY - circleRadius && mouseY < objY + circleRadius){
+        return true;
     }
 }
 
 function draw(){
     BRUSH.beginPath();
-    BRUSH.arc(circleX, circleY, circleRadius, 0, 2 * Math.PI);
+    BRUSH.arc(startX, redStart, circleRadius, 0, 2 * Math.PI);
+    BRUSH.stroke();
+    BRUSH.fillStyle = "red";
+    BRUSH.fill();
+    BRUSH.strokeStyle = "red";
+    BRUSH.stroke();
+    BRUSH.beginPath();
+    BRUSH.arc(endX, redEnd, circleRadius, 0, 2 * Math.PI);
     BRUSH.stroke();
     BRUSH.fillStyle = "red";
     BRUSH.fill();
