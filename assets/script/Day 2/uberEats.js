@@ -4,6 +4,8 @@
 
 'use strict';
 
+import { append } from "../functions/append.js";
+
 //get the Canvas from the HTML
 const CANVAS = document.getElementById('game-canvas');
 
@@ -27,6 +29,170 @@ let lastButtonY = 650;
 let leftButtonX = (CANVAS.width/3) + 50;
 let midButtonX = CANVAS.width/2;
 let rightButtonX = ((CANVAS.width/3)*2) - 50;
+
+//get the collision from all the buttons
+let collision0 = false;
+let collision1 = false;
+let collision2 = false;
+let collision3 = false;
+let collision4 = false;
+let collision5 = false;
+let collision6 = false;
+let collision7 = false;
+let collision8 = false;
+let collision9 = false;
+let collisionReset = false;
+let collisionVerify = false;
+
+//get te information about the mouse status
+let cursorX;
+let cursorY;
+let mouseClicked = false;
+
+//get the element that was pressed
+let phoneNumbers;
+
+function addEventListeners(){
+    document.body.addEventListener('mousemove', trackMouseMove);
+    document.body.addEventListener('mousedown', checkClick);
+    document.body.addEventListener('mouseup', checkRelease);
+}
+
+function buttonsCollide(buttonX, buttonY){
+    if (cursorX > buttonX - inputRadius && cursorX < buttonX + inputRadius && cursorY > buttonY - inputRadius && cursorY < buttonY + inputRadius){
+        return true
+    }
+    else {
+        return false;
+    }
+}
+
+function checkClick(mouseDownEvent){
+    mouseClicked = true;
+    collision0 = buttonsCollide(midButtonX, lastButtonY);
+    collision1 = buttonsCollide(leftButtonX, botButtonY);
+    collision2 = buttonsCollide(midButtonX, botButtonY);
+    collision3 = buttonsCollide(rightButtonX, botButtonY);
+    collision4 = buttonsCollide(leftButtonX, midButtonY);
+    collision5 = buttonsCollide(midButtonX, midButtonY);
+    collision6 = buttonsCollide(rightButtonX, midButtonY);
+    collision7 = buttonsCollide(leftButtonX, topButtonY);
+    collision8 = buttonsCollide(midButtonX, topButtonY);
+    collision9 = buttonsCollide(rightButtonX, topButtonY);
+    collisionReset = buttonsCollide(leftButtonX, lastButtonY);
+    collisionVerify = buttonsCollide(rightButtonX, lastButtonY);
+    if (collision0){
+        BRUSH.beginPath();
+        BRUSH.arc(midButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 0);
+    }
+    else if (collisionReset){
+        BRUSH.beginPath();
+        BRUSH.arc(leftButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+    }
+    else if (collisionVerify){
+        BRUSH.beginPath();
+        BRUSH.arc(rightButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+    }
+    else if (collision1){
+        BRUSH.beginPath();
+        BRUSH.arc(leftButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 1);
+    }
+    else if (collision2){
+        BRUSH.beginPath();
+        BRUSH.arc(midButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 2);
+    }
+    else if (collision3){
+        BRUSH.beginPath();
+        BRUSH.arc(rightButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 3);
+    }
+    else if (collision4){
+        BRUSH.beginPath();
+        BRUSH.arc(leftButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 4);
+    }
+    else if (collision5){
+        BRUSH.beginPath();
+        BRUSH.arc(midButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 5);
+    }
+    else if (collision6){
+        BRUSH.beginPath();
+        BRUSH.arc(rightButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 6);
+    }
+    else if (collision7){
+        BRUSH.beginPath();
+        BRUSH.arc(leftButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 7);
+    }
+    else if (collision8){
+        BRUSH.beginPath();
+        BRUSH.arc(midButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 8);
+    }
+    else if (collision9){
+        BRUSH.beginPath();
+        BRUSH.arc(rightButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
+        BRUSH.strokeStyle = "black";
+        BRUSH.stroke();
+        BRUSH.fillStyle = "black";
+        BRUSH.fill();
+        append(phoneNumbers, 9);
+    }
+}
+
+function checkRelease(mouseUpEvent){
+    mouseClicked = false;
+    drawButtons();
+}
 
 function drawButtons(){
     BRUSH.beginPath();
@@ -117,8 +283,15 @@ function drawButtons(){
     BRUSH.fillText("✗", leftButtonX - 10, lastButtonY + 15);
 }
 
+function trackMouseMove(mouseMoveEvent){
+    cursorX = mouseMoveEvent.clientX;
+    cursorY = mouseMoveEvent.clientY;
+}
+
 function start(){
     drawButtons();
+    addEventListeners();
+    phoneNumbers = [];
 }
 
 window.addEventListener('load', start);
