@@ -61,6 +61,7 @@ export class StartScreen {
         style.id = 'start-screen-styles';
         style.textContent = `
             @import url('https://fonts.cdnfonts.com/css/horror-whisper');
+            @import url('https://fonts.cdnfonts.com/css/nightmare-pills');
 
             #start-screen-overlay {
                 position: fixed;
@@ -77,7 +78,7 @@ export class StartScreen {
 
             .ss-title {
                 color: #fff;
-                font-family: 'Horror Whisper', sans-serif;
+                font-family: 'Horror Whisper', sans-serif !important;
                 font-size: 3.5rem;
                 font-weight: bold;
                 letter-spacing: 0.15em;
@@ -87,7 +88,7 @@ export class StartScreen {
 
             .ss-subtitle {
                 color: #aaa;
-                font-family: 'Horror Whisper', sans-serif;
+                font-family: 'Horror Whisper', sans-serif !important;
                 font-size: 1.2rem;
                 letter-spacing: 0.08em;
                 margin: 0;
@@ -98,6 +99,7 @@ export class StartScreen {
                 font-size: 1.1rem;
                 font-weight: bold;
                 letter-spacing: 0.06em;
+                font-family: 'Horror Whisper', sans-serif !important;
                 color: #fff;
                 background: rgba(33, 38, 49, 0.8);
                 border: 2px solid rgb(130, 135, 148);
@@ -110,7 +112,12 @@ export class StartScreen {
                 background: rgba(85, 28, 4, 1);
                 box-shadow: 0 0 20px rgba(192, 46, 20, 0.6);
                 border: 2px solid rgba(199, 25, 25, 1);
+
                 transform: scale(1.05);
+            }
+
+            #start-screen-overlay:has(.ss-button:hover) * {
+                font-family: 'NIGHTMARE PILLS', sans-serif !important;
             }
 
             .ss-button:active {
