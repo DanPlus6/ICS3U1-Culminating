@@ -6,6 +6,7 @@ import { ActionMap } from './Classes/Player/ActionMap.js';
 import { Player } from './Classes/Player/Player.js';
 import { Canvas } from './Classes/GameScreen/Canvas.js';
 import { GAME_CONFIG } from './config.js';
+import { Bed } from './Classes/Entities/Bed.js';
 
 // +++++++++++++++++ Game State ++++++++++++++++++++
 let CV;
@@ -14,6 +15,7 @@ let gameActive = false;
 let gameRefresher = null;
 let gameTick = 0;
 let screenTransitioning = false;
+const gameState = { day1End: false };
 
 // +++++++++++++++++ Input System ++++++++++++++++++++
 let iptManager;
@@ -134,3 +136,59 @@ function init() {
 }
 
 window.addEventListener('load', init);
+
+
+
+// 2. Shared game state (add alongside your other state vars at the top)
+
+// 3. Declare bed variable alongside PL / CV
+let bed;
+
+// 4. One-shot interact tracker  (stops E being held down counting as repeated presses)
+let interactWasDown = false;
+
+// 5. Inside buildGame(), after creating PL:
+function buildGame() {
+    // ... existing player setup ...
+
+    bed = new Bed({
+        path:      'assets/img/Entities/bed/bed.png',
+        width:     128,
+        height:    128,
+        x:         globalThis.CV_WIDTH  / 2 - 64,   // centre of screen; adjust to room layout
+        y:         globalThis.CV_HEIGHT / 2 - 64,
+        canvas:    CV,
+        gameState: gameState
+    });
+
+    CV.addEntity(bed);
+}
+
+// 6. Inside refreshGame(), replace / extend the existing body:
+function refreshGame() {
+    // ── Input ──────────────────────────────────────────
+    const interactDown = actMapper.isActive('interact') && !interactWasDown;
+    interactWasDown    = actMapper.isActive('interact');
+
+    // ── Update ─────────────────────────────────────────
+    PL.update();
+
+    if (PL.oldX !== PL.x || PL.oldY !== PL.y) CV.update(PL);
+
+    bed.update(PL, interactDown);
+
+    // ── Render ─────────────────────────────────────────
+    CV.clearAndDraw();          // draws all spatial-grid entities (bed sprite + player)
+    bed.drawPrompt();           // "[E] Sleep" label — only when in range
+    bed.drawFade();             // black overlay — only when fading / faded
+
+    // ── Day transition check ────────────────────────────
+    if (gameState.day1End) {
+        clearInterval(gameRefresher);
+        gameRefresher = null;
+        gameActive    = false;
+        // TODO: loadDay2();
+    }
+
+    gameTick++;
+}
