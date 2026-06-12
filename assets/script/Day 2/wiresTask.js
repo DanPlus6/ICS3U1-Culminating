@@ -361,5 +361,5 @@ function start(){
     randomizeStarts();
     randomizeEnds();
     draw();
-    addEventListeners();
+    addListeners();
 }
