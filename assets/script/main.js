@@ -252,3 +252,72 @@ function refreshGame() {
 
     gameTick++;
 }
+
+
+// ─── In main.js ───────────────────────────────────────────────
+
+// 1. Import
+import { StudyTask } from './Classes/Tasks/StudyTask.js';
+
+// 2. Declare alongside other task vars
+let studyTask;
+
+// 3. Inside buildGame():
+function buildGame() {
+    // ... existing player + bed + sweepTask setup ...
+
+    studyTask = new StudyTask({
+        canvas:     CV,
+        onComplete: () => {
+            console.log('Study task complete!');
+            // TODO: trigger next Day 1 task (cook task)
+        }
+    });
+
+    // studyTask.start() is called from sweepTask's onComplete, not here
+}
+
+// 4. Updated sweepTask onComplete to chain into studyTask:
+sweepTask = new SweepTask({
+    canvas:     CV,
+    onComplete: () => {
+        console.log('Sweep task complete!');
+        studyTask.start();   // chain directly into study task
+    }
+});
+
+// 5. Inside refreshGame() — update and draw both tasks:
+function refreshGame() {
+    // ── Input ─────────────────────────────────────────────
+    const interactDown = actMapper.isActive('interact') && !interactWasDown;
+    interactWasDown    = actMapper.isActive('interact');
+
+    // ── Update ────────────────────────────────────────────
+    // Block player movement while any task is active
+    if (!sweepTask.active && !studyTask.active) {
+        PL.update();
+        if (PL.oldX !== PL.x || PL.oldY !== PL.y) CV.update(PL);
+    }
+
+    sweepTask.update(iptManager);
+    studyTask.update(iptManager);
+
+    bed.update(PL, interactDown);
+
+    // ── Render ────────────────────────────────────────────
+    CV.clearAndDraw();
+    sweepTask.draw();     // only renders when sweepTask.active
+    studyTask.draw();     // only renders when studyTask.active
+    bed.drawPrompt();
+    bed.drawFade();
+
+    // ── Day transition check ──────────────────────────────
+    if (gameState.day1End) {
+        clearInterval(gameRefresher);
+        gameRefresher = null;
+        gameActive    = false;
+        // TODO: loadDay2();
+    }
+
+    gameTick++;
+}
