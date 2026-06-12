@@ -1,3 +1,7 @@
+/** Import css fonts */
+@import url('https://fonts.cdnfonts.com/css/horror-whisper');
+@import url('https://fonts.cdnfonts.com/css/nightmare-pills');
+
 /* Global body */
 html, body {
     height: 100vh;
@@ -14,193 +18,16 @@ body {
     align-items: center;
 }
 
-/* Controls side panel */
-.controls-panel {
-    position: fixed;
-    left: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    text-align: left;
-}
-
-.misc-controls-panel {
-    position: fixed;
-    right: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    text-align: left;
-}
-
-.controls-panel h3,
-.controls-panel p,
-.misc-controls-panel h3,
-.misc-controls-panel p {
-    margin: 0;
-}
-
-.controls-panel h3,
-.misc-controls-panel h3 {
-    margin-bottom: 8px;
-}
-
-.controls-panel p,
-.misc-controls-panel p {
-    margin-bottom: 6px;
-}
-
-.misc-controls-panel small {
-    font-size: 12px;
-}
-
-.misc-controls-panel li {
-    font-size: 8px;
-    margin-left: 8px;
-}
-
-
-/* Game clock and game control buttons */
-.gameclock {
-    margin-bottom: 0;
-    text-align: center;
-}
-
-.gameclock h2 {
-    margin: 0;
-    padding: 0;
-    line-height: 1.75;
-}
-
-.gameclock button {
-    margin-bottom: 8px;
-    padding: 0.6em 2em;
-    
-    border: none;
-    outline: none;
-    color: rgb(255, 255, 255);
-    background: #111;
-    cursor: pointer;
-    position: relative;
-    z-index: 0;
-    border-radius: 10px;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-}
-
-.gameclock button:before {
-    content: "";
-    background: linear-gradient(
-        45deg,
-        #ff0000,
-        #ff7300,
-        #fffb00,
-        #48ff00,
-        #00ffd5,
-        #002bff,
-        #7a00ff,
-        #ff00c8,
-        #ff0000
-    );
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    background-size: 400%;
-    z-index: -1;
-    filter: blur(5px);
-    -webkit-filter: blur(5px);
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    animation: glowing-gameclock-buttons 20s linear infinite;
-    transition: opacity 0.3s ease-in-out;
-    border-radius: 10px;
-}
-
-@keyframes glowing-gameclock-buttons {
-    0% {
-        background-position: 0 0;
-    }
-    50% {
-        background-position: 400% 0;
-    }
-    100% {
-        background-position: 0 0;
-    }
-}
-
-.gameclock button:after {
-    z-index: -1;
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #222;
-    left: 0;
-    top: 0;
-    border-radius: 10px;
-}
-
-
 /* Game canvas */
-.canvas-stage {
-    position: relative;
-    width: 1200px;
-    height: 700px;
-}
-
-#game-canvas {
-    width: 1200px;
-    height: 700px;
+canvas {
+    width: 99vw;
+    height: 99vh;
     border: 5px solid;
     display: block;
 }
 
-.win-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    text-align: center;
-    z-index: 2;
-}
-
-.win-overlay h2,
-.win-overlay p {
-    margin: 0;
-}
-
-.win-overlay img {
-    max-width: 420px;
-    max-height: 320px;
-    width: auto;
-    height: auto;
-}
-
 .hidden {
     display: none;
-}
-
-.controls-hint {
-    position: fixed;
-    left: 50%;
-    bottom: 28px;
-    transform: translateX(-50%);
-    max-width: 520px;
-    padding: 12px 18px;
-    border: 2px solid rgba(255, 255, 255, 0.28);
-    border-radius: 12px;
-    background: rgba(15, 15, 15, 0.92);
-    color: white;
-    text-align: center;
-    line-height: 1.4;
-    z-index: 5;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
-    pointer-events: none;
 }
 
 /* Game text display area */
@@ -208,7 +35,9 @@ body {
     width: 1200px;
     height: 96px;
     margin-top: 24px;
+
     text-align: center;
+    display: none;
 }
 
 .game-text-display p {
