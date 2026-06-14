@@ -16,10 +16,6 @@ const BRUSH = CANVAS.getContext('2d');
 
 //get the button input information
 let inputRadius = 40;
-let topButtonInput = [7, 8, 9];
-let midButtonInput = [4, 5, 6];
-let botButtonInput = [1, 2, 3];
-let lastButtonInput = 0;
 let topButtonY = 200;
 let midButtonY = 350;
 let botButtonY = 500;
