@@ -74,7 +74,7 @@ let linesAmount = 0;
 let collided = false;
 
 /**
- * Adds all event listeners to the game
+ * Adds mouse event listeners
  */
 function addMouseListeners(){
     document.body.addEventListener('mousemove', checkMouseMove);
@@ -133,7 +133,7 @@ function checkMouseMove(mouseMoveEvent){
 }
 
 /**
- * Checks if the mouse is pressed
+ * Checks if the mouse is pressed and checks if the mouse is on any of the wires
  * @param {MouseEvent} mouseDownEvent Information about if the mouse is pressed
  */
 function checkMouseDown(mouseDownEvent){
@@ -312,7 +312,7 @@ function draw(){
 }
 
 /**
- * Randomizes the starting positions of both the wire ends and starts
+ * Randomizes the starting positions of the wire start positions
  */
 function randomizeStarts(){
     let pos;
@@ -336,6 +336,9 @@ function randomizeStarts(){
     originalYellowStartY = yellowStartY;
 }
 
+/**
+ * Randomizes the wire ending positions
+ */
 function randomizeEnds(){
     let pos;
     //traverses through the actualEnds array to assign a value to each element

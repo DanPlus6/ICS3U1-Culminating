@@ -54,12 +54,21 @@ let secretNumber = 4168508495;
 let normalEnding = false;
 let secretEnding = true;
 
+/**
+ * Adds event listeners for the cursor
+ */
 function addCursorListeners(){
     document.body.addEventListener('mousemove', trackMouseMove);
     document.body.addEventListener('mousedown', checkClick);
     document.body.addEventListener('mouseup', checkRelease);
 }
 
+/**
+ * Checks if the cursor is on the button
+ * @param {number} buttonX The X position of the button
+ * @param {number} buttonY The Y position of the button
+ * @returns true if there is a collision, false if there isn't
+ */
 function buttonsCollide(buttonX, buttonY){
     if (cursorX > buttonX - inputRadius && cursorX < buttonX + inputRadius && cursorY > buttonY - inputRadius && cursorY < buttonY + inputRadius){
         return true
@@ -69,6 +78,10 @@ function buttonsCollide(buttonX, buttonY){
     }
 }
 
+/**
+ * Checks if the cursor is on any of the buttons when there is a click
+ * @param {MouseEvent} mouseDownEvent Information if the mouse is held
+ */
 function checkClick(mouseDownEvent){
     mouseClicked = true;
     collision0 = buttonsCollide(midButtonX, lastButtonY);
@@ -83,6 +96,7 @@ function checkClick(mouseDownEvent){
     collision9 = buttonsCollide(rightButtonX, topButtonY);
     collisionReset = buttonsCollide(leftButtonX, lastButtonY);
     collisionVerify = buttonsCollide(rightButtonX, lastButtonY);
+    //check if the cursor is on button 0
     if (collision0){
         BRUSH.beginPath();
         BRUSH.arc(midButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
@@ -92,6 +106,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(0);
     }
+    //check if the cursor is on button ✗
     else if (collisionReset){
         BRUSH.beginPath();
         BRUSH.arc(leftButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
@@ -101,6 +116,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers = [];
     }
+    //check if the cursor is on button ✓
     else if (collisionVerify){
         BRUSH.beginPath();
         BRUSH.arc(rightButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
@@ -110,6 +126,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         checkSimilarity();
     }
+    //check if the cursor is on button 1
     else if (collision1){
         BRUSH.beginPath();
         BRUSH.arc(leftButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
@@ -119,6 +136,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(1);
     }
+    //check if the cursor is on button 2
     else if (collision2){
         BRUSH.beginPath();
         BRUSH.arc(midButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
@@ -128,6 +146,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(2);
     }
+    //check if the cursor is on button 3
     else if (collision3){
         BRUSH.beginPath();
         BRUSH.arc(rightButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
@@ -137,6 +156,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(3);
     }
+    //check if the cursor is on button 4
     else if (collision4){
         BRUSH.beginPath();
         BRUSH.arc(leftButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
@@ -146,6 +166,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(4);
     }
+    //check if the cursor is on button 5
     else if (collision5){
         BRUSH.beginPath();
         BRUSH.arc(midButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
@@ -155,6 +176,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(5);
     }
+    //check if the cursor is on button 6
     else if (collision6){
         BRUSH.beginPath();
         BRUSH.arc(rightButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
@@ -164,6 +186,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(6);
     }
+    //check if the cursor is on button 7
     else if (collision7){
         BRUSH.beginPath();
         BRUSH.arc(leftButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
@@ -173,6 +196,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(7);
     }
+    //check if the cursor is on button 8
     else if (collision8){
         BRUSH.beginPath();
         BRUSH.arc(midButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
@@ -182,6 +206,7 @@ function checkClick(mouseDownEvent){
         BRUSH.fill();
         phoneNumbers.push(8);
     }
+    //check if the cursor is on button 9
     else if (collision9){
         BRUSH.beginPath();
         BRUSH.arc(rightButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
@@ -193,12 +218,19 @@ function checkClick(mouseDownEvent){
     }
 }
 
+/**
+ * Checks if the button is released and updates the CANVAS
+ * @param {MouseEvent} mouseUpEvent information about if the button is released
+ */
 function checkRelease(mouseUpEvent){
     mouseClicked = false;
     BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
     drawButtons();
 }
 
+/**
+ * Checks if the user input is the same as the phone numbers
+ */
 function checkSimilarity(){
     if (phoneNumbers.join('') == uberNumber){
         phoneNumbers = ['Calling ', 'Uber ', 'Eats'];
@@ -213,6 +245,9 @@ function checkSimilarity(){
     }
 }
 
+/**
+ * Draws the buttons and input
+ */
 function drawButtons(){
     BRUSH.beginPath();
     BRUSH.arc(midButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
@@ -303,11 +338,18 @@ function drawButtons(){
     BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width/5)*2)+45, 100);
 }
 
+/**
+ * Checks where the mouse is
+ * @param {MouseEvent} mouseMoveEvent information about the mouse position
+ */
 function trackMouseMove(mouseMoveEvent){
     cursorX = mouseMoveEvent.clientX;
     cursorY = mouseMoveEvent.clientY;
 }
 
+/**
+ * Starts the code
+ */
 function start(){
     phoneNumbers = [];
     drawButtons();
