@@ -355,10 +355,10 @@ function trackMouseMove(mouseMoveEvent){
 /**
  * Starts the code
  */
-function start(){
+function startCall(){
     phoneNumbers = [];
     drawButtons();
     addCursorListeners();
 }
 
-window.addEventListener('load', start);
+window.addEventListener('load', startCall);

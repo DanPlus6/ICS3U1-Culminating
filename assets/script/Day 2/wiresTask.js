@@ -381,7 +381,7 @@ function randomizeEnds(){
 /**
  * Starts the code
  */
-function start(){
+function startWires(){
     randomizeStarts();
     randomizeEnds();
     BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
