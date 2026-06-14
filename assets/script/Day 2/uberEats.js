@@ -14,6 +14,10 @@ CANVAS.height = CANVAS.clientHeight;
 //get the graphics content from the Canvas for drawing directions
 const BRUSH = CANVAS.getContext('2d');
 
+//get the phone image link
+const PHONE_IMAGE = document.createElement('img');
+PHONE_IMAGE.src = '../../img/ian_png-removebg-preview.png';
+
 //get the button input information
 let inputRadius = 40;
 let topButtonY = 200;
@@ -249,6 +253,7 @@ function checkSimilarity(){
  * Draws the buttons and input
  */
 function drawButtons(){
+    BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
     BRUSH.beginPath();
     BRUSH.arc(midButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
     BRUSH.strokeStyle = "grey";
@@ -335,7 +340,7 @@ function drawButtons(){
     BRUSH.fillText("9", rightButtonX - 10, topButtonY + 15);
     BRUSH.fillText("✓", rightButtonX - 10, lastButtonY + 15);
     BRUSH.fillText("✗", leftButtonX - 10, lastButtonY + 15);
-    BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width/5)*2)+45, 100);
+    BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width/5)*2)+45, 150);
 }
 
 /**
