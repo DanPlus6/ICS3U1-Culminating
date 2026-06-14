@@ -14,12 +14,16 @@ CANVAS.height = CANVAS.clientHeight;
 //get the graphics content from the Canvas for drawing directions
 const BRUSH = CANVAS.getContext('2d');
 
+//get the phone image link
+const PHONE_IMAGE = document.createElement('img');
+PHONE_IMAGE.src = '../../img/ian_png-removebg-preview.png';
+
 //information about the circle
 let circleRadius = 40;
-let startX = CANVAS.width / 3;
-let endX = (CANVAS.width / 3) * 2;
-let rgbyStarts = [50, 200, 350, 500];
-let rgbyEnds = [50, 200, 350, 500];
+let startX = CANVAS.width / 3 + 50;
+let endX = (CANVAS.width / 3) * 2 - 50;
+let rgbyStarts = [200, 350, 500, 650];
+let rgbyEnds = [200, 350, 500, 650];
 let actualStarts = [0, 0, 0, 0];
 let actualEnds = [0, 0, 0, 0];
 
@@ -72,6 +76,9 @@ let linesAmount = 0;
 
 //check if the mouse is currently collided with a starting wire
 let collided = false;
+
+//check if the game has been completed
+let gameCompleted = false;
 
 /**
  * Adds mouse event listeners
@@ -218,24 +225,29 @@ function checkMouseUp(mouseUpEvent){
         greenStartX = startX;
 
         BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
+        BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
         draw();
     }
     else {
         //check if the wire is completed
         if (redEndCollide){
             redCompleted = true;
+            endGame();
         }
         //check if the wire is completed
         if (yellowEndCollide){
             yellowCompleted = true;
+            endGame();
         }
         //check if the wire is completed
         if (blueEndCollide){
             blueCompleted = true;
+            endGame();
         }
         //check if the wire is completed
         if (greenEndCollide){
             greenCompleted = true;
+            endGame();
         }
     }
 }
@@ -312,6 +324,15 @@ function draw(){
 }
 
 /**
+ * Check if the game has ended
+ */
+function endGame(){
+    if (redCompleted && greenCompleted && yellowCompleted && blueCompleted){
+        gameCompleted = true;
+    }
+}
+
+/**
  * Randomizes the starting positions of the wire start positions
  */
 function randomizeStarts(){
@@ -363,6 +384,7 @@ function randomizeEnds(){
 function start(){
     randomizeStarts();
     randomizeEnds();
+    BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
     draw();
     addMouseListeners();
 }
