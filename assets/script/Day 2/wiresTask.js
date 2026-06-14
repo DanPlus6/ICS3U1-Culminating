@@ -76,7 +76,7 @@ let collided = false;
 /**
  * Adds all event listeners to the game
  */
-function addListeners(){
+function addMouseListeners(){
     document.body.addEventListener('mousemove', checkMouseMove);
     document.body.addEventListener('mousedown', checkMouseDown);
     document.body.addEventListener('mouseup', checkMouseUp);
@@ -361,5 +361,5 @@ function start(){
     randomizeStarts();
     randomizeEnds();
     draw();
-    addListeners();
+    addMouseListeners();
 }
