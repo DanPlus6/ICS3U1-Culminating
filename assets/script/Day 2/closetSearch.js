@@ -28,6 +28,9 @@ RDOOR_IMAGE.src = '../../img/Day2Img/closetRDoor.png';
 const JUMPSCARE_IMAGE = document.createElement('img');
 JUMPSCARE_IMAGE.src = '../../img/Day3Img/3_Jumpscare.png';
 
+//get the jumpscare sound
+const JUMPSCARE_AUDIO = new Audio('../../audio/JumpscareScream.mp3');
+
 //get the x value of the closet
 let backgroundX = -CANVAS.width/2 + 27;
 
@@ -42,7 +45,6 @@ let jumpscareTiming = 575;
  */
 function addClosetListeners(){
     addEventListener('keydown', checkClosetDown);
-    addEventListener('keyup', checkClosetStop);
 }
 
 /**
@@ -53,6 +55,7 @@ function closetDraw(){
     BRUSH.drawImage(BACKGROUND_IMAGE, backgroundX, -10, CANVAS.width, CANVAS.height + 20);
     BRUSH.drawImage(LDOOR_IMAGE, 0, 0, CANVAS.width/2 - 10, CANVAS.height);
     BRUSH.drawImage(RDOOR_IMAGE, CANVAS.width/2 + 10, 0, CANVAS.width/2 - 10, CANVAS.height);
+
 }
 
 /**
@@ -68,6 +71,7 @@ function checkClosetDown(keydown){
         //check if the background value is the same to trigger the jumpscare
         if (backgroundX >= jumpscareTiming){
             BRUSH.drawImage(JUMPSCARE_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+            JUMPSCARE_AUDIO.play();
         }
     }
 }
