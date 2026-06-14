@@ -4,8 +4,6 @@
 
 'use strict';
 
-import { append } from "../functions/append.js";
-
 //get the Canvas from the HTML
 const CANVAS = document.getElementById('game-canvas');
 
@@ -52,6 +50,14 @@ let mouseClicked = false;
 //get the element that was pressed
 let phoneNumbers;
 
+//stores the correct phone numbers to call
+let uberNumber =  6474356685;
+let secretNumber = 4168508495;
+
+//stores the different ending activations
+let normalEnding = false;
+let secretEnding = true;
+
 function addEventListeners(){
     document.body.addEventListener('mousemove', trackMouseMove);
     document.body.addEventListener('mousedown', checkClick);
@@ -88,7 +94,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 0);
+        phoneNumbers.push(0);
     }
     else if (collisionReset){
         BRUSH.beginPath();
@@ -106,6 +112,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
+        checkSimilarity();
     }
     else if (collision1){
         BRUSH.beginPath();
@@ -114,7 +121,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 1);
+        phoneNumbers.push(1);
     }
     else if (collision2){
         BRUSH.beginPath();
@@ -123,7 +130,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 2);
+        phoneNumbers.push(2);
     }
     else if (collision3){
         BRUSH.beginPath();
@@ -132,7 +139,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 3);
+        phoneNumbers.push(3);
     }
     else if (collision4){
         BRUSH.beginPath();
@@ -141,7 +148,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 4);
+        phoneNumbers.push(4);
     }
     else if (collision5){
         BRUSH.beginPath();
@@ -150,7 +157,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 5);
+        phoneNumbers.push(5);
     }
     else if (collision6){
         BRUSH.beginPath();
@@ -159,7 +166,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 6);
+        phoneNumbers.push(6);
     }
     else if (collision7){
         BRUSH.beginPath();
@@ -168,7 +175,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 7);
+        phoneNumbers.push(7);
     }
     else if (collision8){
         BRUSH.beginPath();
@@ -177,7 +184,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 8);
+        phoneNumbers.push(8);
     }
     else if (collision9){
         BRUSH.beginPath();
@@ -186,7 +193,7 @@ function checkClick(mouseDownEvent){
         BRUSH.stroke();
         BRUSH.fillStyle = "black";
         BRUSH.fill();
-        append(phoneNumbers, 9);
+        phoneNumbers.push(9);
     }
 }
 
@@ -194,6 +201,20 @@ function checkRelease(mouseUpEvent){
     mouseClicked = false;
     BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
     drawButtons();
+}
+
+function checkSimilarity(){
+    if (phoneNumbers.join('') == uberNumber){
+        phoneNumbers = ['Calling ', 'Uber ', 'Eats'];
+        normalEnding = true;
+    }
+    else if (phoneNumbers.join('') == secretNumber){
+        phoneNumbers = ['Calling ', 'Mom'];
+        secretEnding = true;
+    }
+    else{
+        phoneNumbers = ['Invalid ', 'Number'];
+    }
 }
 
 function drawButtons(){
@@ -283,7 +304,7 @@ function drawButtons(){
     BRUSH.fillText("9", rightButtonX - 10, topButtonY + 15);
     BRUSH.fillText("✓", rightButtonX - 10, lastButtonY + 15);
     BRUSH.fillText("✗", leftButtonX - 10, lastButtonY + 15);
-    BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width/5)*2)+65, 100);
+    BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width/5)*2)+45, 100);
 }
 
 function trackMouseMove(mouseMoveEvent){
