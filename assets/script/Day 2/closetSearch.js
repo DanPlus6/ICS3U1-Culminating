@@ -16,13 +16,13 @@ const BRUSH = CANVAS.getContext('2d');
 
 //get the closet images
 const BACKGROUND_IMAGE = document.createElement('img');
-BACKGROUND_IMAGE.src = '../../img/closetBG.png';
+BACKGROUND_IMAGE.src = '../../img/Day2Img/closetBG.png';
 
 const LDOOR_IMAGE = document.createElement('img');
-LDOOR_IMAGE.src = '../../img/closetLDoor.png';
+LDOOR_IMAGE.src = '../../img/Day2Img/closetLDoor.png';
 
 const RDOOR_IMAGE = document.createElement('img');
-RDOOR_IMAGE.src = '../../img/closetRDoor.png';
+RDOOR_IMAGE.src = '../../img/Day2Img/closetRDoor.png';
 
 let backgroundX = -CANVAS.width/2 + 27;
 

@@ -16,7 +16,7 @@ const BRUSH = CANVAS.getContext('2d');
 
 //get the phone image link
 const PHONE_IMAGE = document.createElement('img');
-PHONE_IMAGE.src = '../../img/ian_png-removebg-preview.png';
+PHONE_IMAGE.src = '../../img/Day2Img/ian_png-removebg-preview.png';
 
 //get the button input information
 let inputRadius = 40;
