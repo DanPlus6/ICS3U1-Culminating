@@ -52,7 +52,7 @@ let secretNumber = 4168508495;
 
 //stores the different ending activations
 let normalEnding = false;
-let secretEnding = true;
+let secretEnding = false;
 
 /**
  * Adds event listeners for the cursor
