@@ -15,7 +15,7 @@ CANVAS.height = CANVAS.clientHeight;
 const BRUSH = CANVAS.getContext('2d');
 
 //get the monster image
-const MONSTER_IMAGE = document.createElement('img');
-MONSTER_IMAGE.src = '../../img/PlayerAvatar/trollge.png';
+const BACKGROUND_IMAGE = document.createElement('img');
+BACKGROUND_IMAGE.src = '../../img/closetBG.png';
 
 let leftDoor
