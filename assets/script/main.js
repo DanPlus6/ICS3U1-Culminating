@@ -1,3 +1,6 @@
+/**
+ * By: David Fu, Ian Choy, Marcus Kim
+ */
 'use strict';
 
 import { StartScreen } from './Classes/UI/StartScreen.js';
