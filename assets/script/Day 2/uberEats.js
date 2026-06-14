@@ -54,7 +54,7 @@ let secretNumber = 4168508495;
 let normalEnding = false;
 let secretEnding = true;
 
-function addMouseListeners(){
+function addCursorListeners(){
     document.body.addEventListener('mousemove', trackMouseMove);
     document.body.addEventListener('mousedown', checkClick);
     document.body.addEventListener('mouseup', checkRelease);
@@ -311,7 +311,7 @@ function trackMouseMove(mouseMoveEvent){
 function start(){
     phoneNumbers = [];
     drawButtons();
-    addMouseListeners();
+    addCursorListeners();
 }
 
 window.addEventListener('load', start);
