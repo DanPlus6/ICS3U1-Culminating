@@ -226,6 +226,9 @@ function checkMouseUp(mouseUpEvent){
 
         BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
         BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
+        BRUSH.font = "35px Arial";
+        BRUSH.fillStyle = "black";
+        BRUSH.fillText('Use Mouse to Connect Wires', CANVAS.width/3 + 25, 150);
         draw();
     }
     else {
@@ -385,6 +388,9 @@ function startWires(){
     randomizeStarts();
     randomizeEnds();
     BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
+    BRUSH.font = "35px Arial";
+    BRUSH.fillStyle = "black";
+    BRUSH.fillText('Use Mouse to Connect Wires', CANVAS.width/3 + 25, 150);
     draw();
     addMouseListeners();
 }

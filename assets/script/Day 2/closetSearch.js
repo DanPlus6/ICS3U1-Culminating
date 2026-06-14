@@ -55,7 +55,9 @@ function closetDraw(){
     BRUSH.drawImage(BACKGROUND_IMAGE, backgroundX, -10, CANVAS.width, CANVAS.height + 20);
     BRUSH.drawImage(LDOOR_IMAGE, 0, 0, CANVAS.width/2 - 10, CANVAS.height);
     BRUSH.drawImage(RDOOR_IMAGE, CANVAS.width/2 + 10, 0, CANVAS.width/2 - 10, CANVAS.height);
-
+    BRUSH.font = "40px Garamond";
+    BRUSH.fillStyle = "white";
+    BRUSH.fillText("[a] or [left arrow] to look around", 50, 500);
 }
 
 /**

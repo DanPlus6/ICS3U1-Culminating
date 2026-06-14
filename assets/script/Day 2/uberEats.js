@@ -100,6 +100,10 @@ function checkClick(mouseDownEvent){
     collision9 = buttonsCollide(rightButtonX, topButtonY);
     collisionReset = buttonsCollide(leftButtonX, lastButtonY);
     collisionVerify = buttonsCollide(rightButtonX, lastButtonY);
+    //check if phone numbers is not a number
+    if (isNaN(phoneNumbers.join(''))){
+        phoneNumbers = [];
+    }
     //check if the cursor is on button 0
     if (collision0){
         BRUSH.beginPath();
@@ -356,7 +360,7 @@ function trackMouseMove(mouseMoveEvent){
  * Starts the code
  */
 function startCall(){
-    phoneNumbers = [];
+    phoneNumbers = ['Use ', 'Mouse ', 'To Call'];
     drawButtons();
     addCursorListeners();
 }
