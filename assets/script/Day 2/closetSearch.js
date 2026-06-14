@@ -34,9 +34,6 @@ const JUMPSCARE_AUDIO = new Audio('../../audio/JumpscareScream.mp3');
 //get the x value of the closet
 let backgroundX = -CANVAS.width/2 + 27;
 
-//check if the closet background is moving
-let closetMove = false;
-
 //get when the jumpscare happens
 let jumpscareTiming = 575;
 
