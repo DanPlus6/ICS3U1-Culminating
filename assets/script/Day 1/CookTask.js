@@ -1,224 +1,168 @@
-/**MARCUS K. */
+/**
+ * Day 1 - Cook Task
+ * A random arrow prompt appears centre screen.
+ * Tap the matching arrow key. Background cooking image cycles each correct tap.
+ * Random number of prompts (3-5).
+ */
 
 'use strict';
 
-'use strict';
+const CANVAS = document.getElementById('game-canvas');
+CANVAS.width = CANVAS.clientWidth;
+CANVAS.height = CANVAS.clientHeight;
+const BRUSH = CANVAS.getContext('2d');
 
-import { Canvas } from '../GameScreen/Canvas.js';
+// ── Task state ────────────────────────────────────────────────
+let totalPrompts     = 0;
+let promptsCompleted = 0;
+let currentPrompt    = null;   // 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
+let taskActive       = false;
 
-export class CookTask {
-    /**
-     * Cooking minigame for Day 1.
-     * A random arrow prompt appears in the centre of the screen.
-     * Player taps the matching arrow key. Each correct tap cycles the
-     * background cooking image. Must complete a random number of prompts (3–5).
-     *
-     * Prompt images  (centre of screen — swap paths for real sprites):
-     *   assets/img/UI/cook_arrow_up.png
-     *   assets/img/UI/cook_arrow_down.png
-     *   assets/img/UI/cook_arrow_left.png
-     *   assets/img/UI/cook_arrow_right.png
-     *
-     * Background images  (full-screen cooking scene — swap paths for real sprites):
-     *   assets/img/BG/cook_bg_0.png  …  cook_bg_3.png   (4 frames, cycles on each correct tap)
-     *
-     * @param {Object}   args
-     * @param {Canvas}   args.canvas      active Canvas instance
-     * @param {Function} args.onComplete  callback fired when task is finished
-     */
-    constructor({ canvas, onComplete }) {
-        /** @type {Canvas} */
-        this.canvas = canvas;
+// one-shot key guards
+let upWasDown    = false;
+let downWasDown  = false;
+let leftWasDown  = false;
+let rightWasDown = false;
 
-        /** Called when the cook task is fully complete */
-        this.onComplete = onComplete;
+// background image cycling
+let bgIndex = 0;
+const BG_COUNT = 4;
 
-        /** Total number of prompts required this run (3–5) */
-        this.totalPrompts = this._randomTotal();
+// ── Images ───────────────────────────────────────────────────
+// swap src paths for real sprites when ready
 
-        /** How many prompts the player has correctly tapped so far */
-        this.promptsCompleted = 0;
-
-        /** Whether the task is currently running */
-        this.active = false;
-
-        /**
-         * The arrow key the player currently needs to press.
-         * One of: 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
-         */
-        this.currentPrompt = null;
-
-        // ── One-shot key guards ───────────────────────────────────────
-        this._upWasDown    = false;
-        this._downWasDown  = false;
-        this._leftWasDown  = false;
-        this._rightWasDown = false;
-
-        // ── Background image cycling ──────────────────────────────────
-        /** Index into the background image array (advances on each correct tap) */
-        this._bgIndex = 0;
-
-        const BG_COUNT = 4;
-        this._bgImages = Array.from({ length: BG_COUNT }, (_, i) =>
-            this._loadImage(`assets/img/BG/cook_bg_${i}.png`)
-        );
-
-        // ── Prompt arrow images ───────────────────────────────────────
-        this._arrowImgs = {
-            ArrowUp:    this._loadImage('assets/img/UI/cook_arrow_up.png'),
-            ArrowDown:  this._loadImage('assets/img/UI/cook_arrow_down.png'),
-            ArrowLeft:  this._loadImage('assets/img/UI/cook_arrow_left.png'),
-            ArrowRight: this._loadImage('assets/img/UI/cook_arrow_right.png'),
-        };
-
-        /** All four possible prompt keys for random selection */
-        this._KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-
-        /** Size of the arrow prompt image drawn in the centre */
-        this.PROMPT_SIZE = 128;
-    }
-
-    // ─────────────────────────────────────────────
-    //  Public API
-    // ─────────────────────────────────────────────
-
-    /** Begin the cook task */
-    start() {
-        this.active           = true;
-        this.promptsCompleted = 0;
-        this.totalPrompts     = this._randomTotal();
-        this._bgIndex         = 0;
-        this._resetKeyGuards();
-        this._nextPrompt();
-    }
-
-    /**
-     * Call once per game tick from refreshGame().
-     * @param {import('../Player/InputManager.js').InputManager} inputManager
-     */
-    update(inputManager) {
-        if (!this.active) return;
-
-        const upDown    = inputManager.isDown('ArrowUp');
-        const downDown  = inputManager.isDown('ArrowDown');
-        const leftDown  = inputManager.isDown('ArrowLeft');
-        const rightDown = inputManager.isDown('ArrowRight');
-
-        // Derive one-shot taps
-        const tapped = {
-            ArrowUp:    upDown    && !this._upWasDown,
-            ArrowDown:  downDown  && !this._downWasDown,
-            ArrowLeft:  leftDown  && !this._leftWasDown,
-            ArrowRight: rightDown && !this._rightWasDown,
-        };
-
-        // Update guards
-        this._upWasDown    = upDown;
-        this._downWasDown  = downDown;
-        this._leftWasDown  = leftDown;
-        this._rightWasDown = rightDown;
-
-        // Check if the correct key was tapped
-        if (tapped[this.currentPrompt]) {
-            this._registerCorrect();
-        }
-    }
-
-    /**
-     * Draw the cooking background and arrow prompt.
-     * Call AFTER CV.clearAndDraw() so it renders on top of room entities,
-     * but BEFORE bed.drawFade() so the fade still sits on top of everything.
-     */
-    draw() {
-        if (!this.active) return;
-
-        const ctx  = this.canvas.BRUSH;
-        const W    = this.canvas.WIDTH;
-        const H    = this.canvas.HEIGHT;
-        const cx   = W / 2;
-        const cy   = H / 2;
-        const half = this.PROMPT_SIZE / 2;
-
-        // ── Full-screen cooking background ───────────────────────────
-        ctx.save();
-        ctx.drawImage(this._bgImages[this._bgIndex], 0, 0, W, H);
-        ctx.restore();
-
-        // ── Arrow prompt (centred) ────────────────────────────────────
-        ctx.save();
-        ctx.drawImage(
-            this._arrowImgs[this.currentPrompt],
-            cx - half, cy - half,
-            this.PROMPT_SIZE, this.PROMPT_SIZE
-        );
-        ctx.restore();
-
-        // ── Progress counter  e.g. "2 / 4" ───────────────────────────
-        ctx.save();
-        ctx.font      = 'bold 22px sans-serif';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.fillText(
-            `${this.promptsCompleted} / ${this.totalPrompts}`,
-            cx,
-            cy + half + 32
-        );
-        ctx.restore();
-    }
-
-    // ─────────────────────────────────────────────
-    //  Private helpers
-    // ─────────────────────────────────────────────
-
-    /** Advance background index, count the prompt, pick the next one */
-    _registerCorrect() {
-        this.promptsCompleted++;
-
-        // Cycle background image on every correct tap
-        this._bgIndex = (this._bgIndex + 1) % this._bgImages.length;
-
-        if (this.promptsCompleted >= this.totalPrompts) {
-            this.active = false;
-            this.onComplete();
-            return;
-        }
-
-        this._nextPrompt();
-    }
-
-    /**
-     * Pick a new random prompt, guaranteed to be different from the current one
-     * so the same arrow never appears twice in a row.
-     */
-    _nextPrompt() {
-        let next;
-        do {
-            next = this._KEYS[Math.floor(Math.random() * this._KEYS.length)];
-        } while (next === this.currentPrompt);
-
-        this.currentPrompt = next;
-        this._resetKeyGuards();
-    }
-
-    _resetKeyGuards() {
-        this._upWasDown    = false;
-        this._downWasDown  = false;
-        this._leftWasDown  = false;
-        this._rightWasDown = false;
-    }
-
-    /** @returns {number} random integer 3–5 inclusive */
-    _randomTotal() {
-        return Math.floor(Math.random() * 3) + 3;
-    }
-
-    /**
-     * @param {string} src
-     * @returns {HTMLImageElement}
-     */
-    _loadImage(src) {
-        const img = new Image();
-        img.src   = src;
-        return img;
-    }
+// 4 cooking background images, cycle on each correct tap
+const bgImages = [];
+for (let i = 0; i < BG_COUNT; i++) {
+    const img = new Image();
+    img.src   = `assets/img/BG/cook_bg_${i}.png`;
+    bgImages.push(img);
 }
+
+// 4 arrow prompt images shown centre screen
+const arrowImgs = {
+    ArrowUp:    new Image(),
+    ArrowDown:  new Image(),
+    ArrowLeft:  new Image(),
+    ArrowRight: new Image(),
+};
+arrowImgs.ArrowUp.src    = 'assets/img/UI/cook_arrow_up.png';
+arrowImgs.ArrowDown.src  = 'assets/img/UI/cook_arrow_down.png';
+arrowImgs.ArrowLeft.src  = 'assets/img/UI/cook_arrow_left.png';
+arrowImgs.ArrowRight.src = 'assets/img/UI/cook_arrow_right.png';
+
+const PROMPT_SIZE = 128;
+const ALL_KEYS    = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+// ── Keys currently held ──────────────────────────────────────
+const keysDown = {};
+window.addEventListener('keydown', e => keysDown[e.key] = true);
+window.addEventListener('keyup',   e => keysDown[e.key] = false);
+
+// ── Core functions ───────────────────────────────────────────
+
+function startCookTask() {
+    totalPrompts     = Math.floor(Math.random() * 3) + 3;  // 3, 4, or 5
+    promptsCompleted = 0;
+    bgIndex          = 0;
+    taskActive       = true;
+    resetKeyGuards();
+    nextPrompt();
+}
+
+function updateCookTask() {
+    if (!taskActive) return;
+
+    const upDown    = !!keysDown['ArrowUp'];
+    const downDown  = !!keysDown['ArrowDown'];
+    const leftDown  = !!keysDown['ArrowLeft'];
+    const rightDown = !!keysDown['ArrowRight'];
+
+    const tappedUp    = upDown    && !upWasDown;
+    const tappedDown  = downDown  && !downWasDown;
+    const tappedLeft  = leftDown  && !leftWasDown;
+    const tappedRight = rightDown && !rightWasDown;
+
+    upWasDown    = upDown;
+    downWasDown  = downDown;
+    leftWasDown  = leftDown;
+    rightWasDown = rightDown;
+
+    if (currentPrompt === 'ArrowUp'    && tappedUp)    registerCorrect();
+    if (currentPrompt === 'ArrowDown'  && tappedDown)  registerCorrect();
+    if (currentPrompt === 'ArrowLeft'  && tappedLeft)  registerCorrect();
+    if (currentPrompt === 'ArrowRight' && tappedRight) registerCorrect();
+}
+
+function registerCorrect() {
+    promptsCompleted++;
+    bgIndex = (bgIndex + 1) % BG_COUNT;   // cycle background
+
+    if (promptsCompleted >= totalPrompts) {
+        taskActive = false;
+        onCookComplete();
+        return;
+    }
+
+    nextPrompt();
+}
+
+// pick a new random prompt, never the same as current one
+function nextPrompt() {
+    let next;
+    do {
+        next = ALL_KEYS[Math.floor(Math.random() * ALL_KEYS.length)];
+    } while (next === currentPrompt);
+
+    currentPrompt = next;
+    resetKeyGuards();
+}
+
+function resetKeyGuards() {
+    upWasDown    = false;
+    downWasDown  = false;
+    leftWasDown  = false;
+    rightWasDown = false;
+}
+
+function drawCookTask() {
+    if (!taskActive) return;
+
+    const W    = CANVAS.width;
+    const H    = CANVAS.height;
+    const cx   = W / 2;
+    const cy   = H / 2;
+    const half = PROMPT_SIZE / 2;
+
+    // full-screen cooking background
+    BRUSH.drawImage(bgImages[bgIndex], 0, 0, W, H);
+
+    // centred arrow prompt
+    BRUSH.drawImage(arrowImgs[currentPrompt], cx - half, cy - half, PROMPT_SIZE, PROMPT_SIZE);
+
+    // progress counter
+    BRUSH.font      = 'bold 22px sans-serif';
+    BRUSH.fillStyle = 'white';
+    BRUSH.textAlign = 'center';
+    BRUSH.fillText(`${promptsCompleted} / ${totalPrompts}`, cx, cy + half + 32);
+}
+
+function onCookComplete() {
+    console.log('Cook done!');
+    // TODO: call startBedTask() or unlock bed interaction here
+}
+
+// ── Game loop ────────────────────────────────────────────────
+
+function gameLoop() {
+    BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
+    updateCookTask();
+    drawCookTask();
+}
+
+function start() {
+    startCookTask();
+    setInterval(gameLoop, 20);
+}
+
+window.addEventListener('load', start);

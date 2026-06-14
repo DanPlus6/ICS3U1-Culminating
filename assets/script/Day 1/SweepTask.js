@@ -1,150 +1,112 @@
-/**MARCUS K. */
+/**
+ * Day 1 - Sweep Task
+ * Tap LEFT arrow then RIGHT arrow, alternating, for a random number of times (5-20)
+ */
 
 'use strict';
 
-import { Canvas } from '../GameScreen/Canvas.js';
+const CANVAS = document.getElementById('game-canvas');
+CANVAS.width = CANVAS.clientWidth;
+CANVAS.height = CANVAS.clientHeight;
+const BRUSH = CANVAS.getContext('2d');
 
-export class SweepTask {
-    /**
-     * Sweep the broom minigame for Day 1.
-     * Player taps LEFT arrow (image 1) then RIGHT arrow (image 2), alternating,
-     * for a random number of times between 5 and 20.
-     *
-     * @param {Object} args
-     * @param {Canvas}   args.canvas       active Canvas instance
-     * @param {Function} args.onComplete   callback fired when task is finished
-     */
-    constructor({ canvas, onComplete }) {
-        /** @type {Canvas} */
-        this.canvas = canvas;
+// ── Task state ────────────────────────────────────────────────
+let totalSweeps = 0;
+let sweepsCompleted = 0;
+let expectedKey = 'ArrowLeft';   // always starts on left
+let taskActive = false;
 
-        /** Called when the sweep task is fully complete */
-        this.onComplete = onComplete;
+// one-shot key guards (so holding doesn't spam)
+let leftWasDown  = false;
+let rightWasDown = false;
 
-        /** Total number of sweeps required this run (5–20) */
-        this.totalSweeps = Math.floor(Math.random() * 16) + 5; // 5 inclusive, 20 inclusive
+// ── Images ───────────────────────────────────────────────────
+// placeholder 1 = left arrow prompt, placeholder 2 = right arrow prompt
+// swap these src paths for your real arrow images later
+const imgLeft  = new Image();
+imgLeft.src    = 'assets/img/UI/sweep_left.png';
 
-        /** How many sweeps the player has completed so far */
-        this.sweepsCompleted = 0;
+const imgRight = new Image();
+imgRight.src   = 'assets/img/UI/sweep_right.png';
 
-        /**
-         * Which key the player must press next.
-         * Alternates:  'ArrowLeft' → 'ArrowRight' → 'ArrowLeft' → ...
-         * Always starts on ArrowLeft.
-         */
-        this.expectedKey = 'ArrowLeft';
+const PROMPT_SIZE = 128;
 
-        /** Whether the task is currently running */
-        this.active = false;
+// ── Keys currently held ──────────────────────────────────────
+const keysDown = {};
+window.addEventListener('keydown', e => keysDown[e.key] = true);
+window.addEventListener('keyup',   e => keysDown[e.key] = false);
 
-        /** One-shot guards so holding a key doesn't count as multiple taps */
-        this._leftWasDown  = false;
-        this._rightWasDown = false;
+// ── Core functions ───────────────────────────────────────────
 
-        // ── Placeholder images ──────────────────────────────────────────
-        // Swap src strings for your real arrow sprites whenever ready.
-        this._imgLeft  = this._loadImage('assets/img/UI/sweep_left.png');   // placeholder 1
-        this._imgRight = this._loadImage('assets/img/UI/sweep_right.png');  // placeholder 2
+function startSweepTask() {
+    totalSweeps      = Math.floor(Math.random() * 16) + 5;  // 5-20
+    sweepsCompleted  = 0;
+    expectedKey      = 'ArrowLeft';
+    leftWasDown      = false;
+    rightWasDown     = false;
+    taskActive       = true;
+}
 
-        /** Size of the prompt image drawn in the centre of the screen */
-        this.PROMPT_SIZE = 128;
-    }
+function updateSweepTask() {
+    if (!taskActive) return;
 
-    // ─────────────────────────────────────────────
-    //  Public API
-    // ─────────────────────────────────────────────
+    const leftDown  = !!keysDown['ArrowLeft'];
+    const rightDown = !!keysDown['ArrowRight'];
 
-    /** Begin the sweep task */
-    start() {
-        this.active           = true;
-        this.sweepsCompleted  = 0;
-        this.totalSweeps      = Math.floor(Math.random() * 16) + 5;
-        this.expectedKey      = 'ArrowLeft';
-        this._leftWasDown     = false;
-        this._rightWasDown    = false;
-    }
+    const leftTapped  = leftDown  && !leftWasDown;
+    const rightTapped = rightDown && !rightWasDown;
 
-    /**
-     * Call once per game tick from refreshGame().
-     * Pass the raw InputManager so we can read arrow key state directly.
-     *
-     * @param {import('../Player/InputManager.js').InputManager} inputManager
-     */
-    update(inputManager) {
-        if (!this.active) return;
+    leftWasDown  = leftDown;
+    rightWasDown = rightDown;
 
-        const leftDown  = inputManager.isDown('ArrowLeft');
-        const rightDown = inputManager.isDown('ArrowRight');
+    if (expectedKey === 'ArrowLeft'  && leftTapped)  registerSweep();
+    if (expectedKey === 'ArrowRight' && rightTapped) registerSweep();
+}
 
-        // One-shot: only register on the frame the key first goes down
-        const leftTapped  = leftDown  && !this._leftWasDown;
-        const rightTapped = rightDown && !this._rightWasDown;
+function registerSweep() {
+    sweepsCompleted++;
+    // flip expected key
+    expectedKey = expectedKey === 'ArrowLeft' ? 'ArrowRight' : 'ArrowLeft';
 
-        // Update one-shot trackers
-        this._leftWasDown  = leftDown;
-        this._rightWasDown = rightDown;
-
-        if (this.expectedKey === 'ArrowLeft'  && leftTapped)  this._registerSweep();
-        if (this.expectedKey === 'ArrowRight' && rightTapped) this._registerSweep();
-    }
-
-    /**
-     * Draw the prompt image in the centre of the screen.
-     * Call this AFTER CV.clearAndDraw() so it renders on top.
-     */
-    draw() {
-        if (!this.active) return;
-
-        const ctx  = this.canvas.BRUSH;
-        const cx   = this.canvas.WIDTH  / 2;
-        const cy   = this.canvas.HEIGHT / 2;
-        const half = this.PROMPT_SIZE   / 2;
-
-        // Draw the arrow placeholder image for the expected direction
-        const img = this.expectedKey === 'ArrowLeft' ? this._imgLeft : this._imgRight;
-
-        ctx.save();
-        ctx.drawImage(img, cx - half, cy - half, this.PROMPT_SIZE, this.PROMPT_SIZE);
-        ctx.restore();
-
-        // Progress counter  e.g.  "3 / 12"
-        ctx.save();
-        ctx.font      = 'bold 22px sans-serif';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.fillText(
-            `${this.sweepsCompleted} / ${this.totalSweeps}`,
-            cx,
-            cy + half + 32
-        );
-        ctx.restore();
-    }
-
-    // ─────────────────────────────────────────────
-    //  Private helpers
-    // ─────────────────────────────────────────────
-
-    /** Count one sweep and flip the expected direction */
-    _registerSweep() {
-        this.sweepsCompleted++;
-
-        // Alternate expected key
-        this.expectedKey = this.expectedKey === 'ArrowLeft' ? 'ArrowRight' : 'ArrowLeft';
-
-        if (this.sweepsCompleted >= this.totalSweeps) {
-            this.active = false;
-            this.onComplete();
-        }
-    }
-
-    /**
-     * Helper to create and return an Image object from a src path
-     * @param {string} src
-     * @returns {HTMLImageElement}
-     */
-    _loadImage(src) {
-        const img = new Image();
-        img.src   = src;
-        return img;
+    if (sweepsCompleted >= totalSweeps) {
+        taskActive = false;
+        onSweepComplete();
     }
 }
+
+function drawSweepTask() {
+    if (!taskActive) return;
+
+    const cx   = CANVAS.width  / 2;
+    const cy   = CANVAS.height / 2;
+    const half = PROMPT_SIZE   / 2;
+
+    const img = expectedKey === 'ArrowLeft' ? imgLeft : imgRight;
+    BRUSH.drawImage(img, cx - half, cy - half, PROMPT_SIZE, PROMPT_SIZE);
+
+    // progress counter
+    BRUSH.font      = 'bold 22px sans-serif';
+    BRUSH.fillStyle = 'white';
+    BRUSH.textAlign = 'center';
+    BRUSH.fillText(`${sweepsCompleted} / ${totalSweeps}`, cx, cy + half + 32);
+}
+
+function onSweepComplete() {
+    console.log('Sweep done!');
+    // TODO: call startStudyTask() here when chaining tasks
+}
+
+// ── Game loop ────────────────────────────────────────────────
+
+function gameLoop() {
+    BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
+    updateSweepTask();
+    drawSweepTask();
+}
+
+function start() {
+    startSweepTask();
+    setInterval(gameLoop, 20);
+}
+
+window.addEventListener('load', start);
