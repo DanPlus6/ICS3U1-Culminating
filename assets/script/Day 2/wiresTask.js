@@ -78,7 +78,7 @@ let linesAmount = 0;
 let collided = false;
 
 //check if the game has been completed
-let gameCompleted = false;
+let wiresCompleted = false;
 
 /**
  * Adds mouse event listeners
@@ -328,7 +328,7 @@ function draw(){
  */
 function endGame(){
     if (redCompleted && greenCompleted && yellowCompleted && blueCompleted){
-        gameCompleted = true;
+        wiresCompleted = true;
     }
 }
 
