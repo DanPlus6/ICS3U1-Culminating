@@ -1,3 +1,7 @@
+/**
+ * MARCUS K.
+ */
+
 'use strict';
 
 import { GAME_CONFIG } from '../config.js';
