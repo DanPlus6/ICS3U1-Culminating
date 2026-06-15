@@ -10,7 +10,7 @@ import { Player } from './Classes/Player/Player.js';
 import { Canvas } from './Classes/GameScreen/Canvas.js';
 import { GAME_CONFIG } from './config.js';
 import { startDay1, updateDay1, drawDay1, isDay1Complete } from './Day 1/Day1.js';
-import { startDay2, updateDay2, drawDay2, isDay2Complete, isDay2SecretGameOver, stopDay2 } from './Day 2/Day2.js';
+import { startDay2, updateDay2, drawDay2, isDay2Complete, isDay2SecretGameOver, stopDay2 } from './Day 2/day2.js';
 import { startDay3, updateDay3, drawDay3, isDay3Complete } from './Day 3/Day3.js';
 
 // +++++++++++++++++ Game State ++++++++++++++++++++
@@ -41,6 +41,7 @@ function resetGame() {
     gameState.day2End = false;
     stopDay2();
 
+    // clear game refresher interval if active
     if (gameRefresher) clearInterval(gameRefresher);
     gameRefresher = null;
 
@@ -84,12 +85,11 @@ function refreshGame() {
                 canvas: CV,
                 player: PL,
                 inputManager: iptManager,
-                actionMap: actMapper
+                actionMap: actMapper,
+                onDayComplete: () => { gameState.day3End = true; }
             });
             gameState.currentDay = 3;
-            gameActive = false;
-            if (gameRefresher) clearInterval(gameRefresher);
-            gameRefresher = null;
+            gameActive = true;
         }
     } else if (gameState.currentDay === 3) {
         updateDay3();
