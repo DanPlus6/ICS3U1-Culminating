@@ -140,7 +140,7 @@ let backgroundX = -CANVAS.width/2 + 27;
 let jumpscareTiming = 575;
 
 //get when the minigame is finished
-let closedCompleted = false;
+let closetCompleted = false;
 
 //get the functions for the phone minigame
 /**
@@ -476,6 +476,7 @@ function checkClosetDown(keydown){
         if (backgroundX >= jumpscareTiming){
             BRUSH.drawImage(JUMPSCARE_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
             JUMPSCARE_AUDIO.play();
+            closetCompleted = true;
         }
     }
 }
