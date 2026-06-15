@@ -245,6 +245,7 @@ export function updateDay2() {
     //check if the player is in the transition between days
     if (state.mode === 'fade') {
         updateFade();
+        DAY2_BGM.pause();
         return;
     }
 
@@ -313,6 +314,7 @@ export function isDay2SecretGameOver() {
  */
 export function stopDay2() {
     removeTaskListeners();
+    DAY2_BGM.pause();
 }
 
 /**
@@ -505,8 +507,16 @@ function completeTask() {
         KNOCKING_SFX.volume = 0.5;
         KNOCKING_SFX.loop = true;
         DOORBELL_SFX.loop = false;
+        DOORBELL_SFX.pause();
+        DAY2_BGM.pause();
     }
-    //if the current stage is neither of those
+    //if the current stage is the wires stage
+    else if (getStage() === 'wires'){
+        KNOCKING_SFX.loop = false;
+        DOORBELL_SFX.loop = false;
+        DOORBELL_SFX.pause();
+        DAY2_BGM.play();
+    }
     else {
         KNOCKING_SFX.loop = false;
         DOORBELL_SFX.loop = false;
@@ -684,6 +694,9 @@ function drawDoor() {
     }
 
     BRUSH.drawImage(UBER_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+    BRUSH.font = '40px Garamond';
+    BRUSH.fillStyle = 'white';
+    BRUSH.fillText('Click.', midButtonX - 50, 700);
 }
 
 /**
