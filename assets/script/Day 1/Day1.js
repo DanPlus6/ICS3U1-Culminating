@@ -108,19 +108,23 @@ export function startDay1({ canvas, player, inputManager, actionMap, onDayComple
  *@returns {void}
  */
 export function updateDay1() {
+    //skip updates if day 1 is already done
     if (state.done) return;
 
+    //update only the minigame when a task is active
     if (state.mode === 'task') {
         updateTask();
         return;
     }
 
+    //update only the fade when the day is ending
     if (state.mode === 'fade') {
         updateFade();
         return;
     }
 
     PL.update();
+    //refresh the spatial grid only if the player moved
     if (PL.oldX !== PL.x || PL.oldY !== PL.y) {
         CV.update(PL);
     }
@@ -133,6 +137,7 @@ export function updateDay1() {
  *@returns {void}
  */
 export function drawDay1() {
+    //draw just the minigame when a task is active
     if (state.mode === 'task') {
         CV.clearCanvas();
         drawTask();
@@ -141,14 +146,17 @@ export function drawDay1() {
 
     CV.clearAndDraw();
 
+    //show e prompt when the player is close enough
     if (canInteract()) {
         drawInteractPrompt();
     }
 
+    //show hitboxes only when debugging is on
     if (GAME_CONFIG.DEBUG_HITBOXES) {
         drawHitbox();
     }
 
+    //draw fade overlay when leaving day 1
     if (state.mode === 'fade') {
         drawFade();
     }
@@ -230,6 +238,7 @@ function startDay1Music() {
     music.second = new Audio(audioPaths.second);
 
     music.first.onended = () => {
+        //stop the chain if day 1 is done or audio 2 is missing
         if (state.done || !music.second) return;
         music.second.currentTime = 0;
         music.second.play().catch(() => {});
@@ -244,12 +253,14 @@ function startDay1Music() {
  *@returns {void}
  */
 function stopDay1Music() {
+    //stop first track if it exists
     if (music.first) {
         music.first.pause();
         music.first.currentTime = 0;
         music.first.onended = null;
     }
 
+    //stop second track if it exists
     if (music.second) {
         music.second.pause();
         music.second.currentTime = 0;
@@ -268,9 +279,11 @@ function updateMapInteraction() {
     const eTapped = eDown && !state.eWasDown;
     state.eWasDown = eDown;
 
+    //do nothing unless player is near the hitbox and pressed e
     if (!canInteract() || !eTapped) return;
 
     const stage = getStage();
+    //bed is the final interaction so it starts the fade
     if (stage === 'bed') {
         state.mode = 'fade';
         state.fadeAlpha = 0;
@@ -286,6 +299,7 @@ function updateMapInteraction() {
  */
 function canInteract() {
     const hitbox = GAME_CONFIG.HITBOXES.day1[getStage()];
+    //no hitbox means there is nothing to interact with
     if (!hitbox) return false;
 
     return PL.x < hitbox.x + hitbox.w &&
@@ -312,6 +326,7 @@ function startTask(taskName) {
     state.currentTask = taskName;
     state.eWasDown = true;
 
+    //set up sweeping task values
     if (taskName === 'sweep') {
         task.sweep.total = Math.floor(Math.random() * 16) + 5;
         task.sweep.completed = 0;
@@ -319,6 +334,7 @@ function startTask(taskName) {
         task.sweep.keyWasDown = {};
     }
 
+    //set up studying task values
     if (taskName === 'study') {
         task.study.total = Math.floor(Math.random() * 3) + 3;
         task.study.completed = 0;
@@ -328,6 +344,7 @@ function startTask(taskName) {
         task.study.animTick = 0;
     }
 
+    //set up cooking task values
     if (taskName === 'cook') {
         task.cook.total = Math.floor(Math.random() * 3) + 3;
         task.cook.completed = 0;
