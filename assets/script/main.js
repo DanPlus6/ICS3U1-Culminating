@@ -11,7 +11,7 @@ import { Canvas } from './Classes/GameScreen/Canvas.js';
 import { GAME_CONFIG } from './config.js';
 import { startDay1, updateDay1, drawDay1, isDay1Complete } from './Day 1/Day1.js';
 import { startDay3, updateDay3, drawDay3, isDay3Complete } from './Day 3/Day3.js';
-import { startDay2, updateDay2, drawDay2, isDay2Complete, isDay2SecretGameOver, stopDay2 } from './Day 2/Day2.js';
+import { startDay2, updateDay2, drawDay2, isDay2Complete, isDay2SecretGameOver, stopDay2 } from './Day 2/legacyDay2.js';
 
 // +++++++++++++++++ Game State ++++++++++++++++++++
 let CV;

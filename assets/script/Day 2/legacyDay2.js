@@ -29,8 +29,8 @@ const taskImages = {
     sticky1: 'assets/img/Day2Img/2_CloseSticky.png',
     sticky2: 'assets/img/Day2Img/2_SecretEnding.png',
     phone: 'assets/img/Day2Img/ian_png-removebg-preview.png',
-    uberJS: 'assets/img/Day2Img/2_CloseUber1',
-    door: 'assets/img/Day2Img/2_CloseUber2',
+    uberJS: 'assets/img/Day2Img/2_CloseUber1.png',
+    door: 'assets/img/Day2Img/2_CloseUber2.png',
     closetBackground: 'assets/img/Day2Img/closetBG.png',
     closetLeftDoor: 'assets/img/Day2Img/closetLDoor.png',
     closetRightDoor: 'assets/img/Day2Img/closetRDoor.png',
@@ -94,7 +94,7 @@ let collisionVerify = false;
 let phoneNumbers;
 
 //stores the correct phone numbers to call
-let uberNumber = 6474356685;
+let uberNumber = 6475392049;
 let secretNumber = 4168508495;
 
 //stores the different ending activations
@@ -152,7 +152,7 @@ let linesAmount = 0;
 //check if the mouse is currently collided with a starting wire
 let collided = false;
 
-//check if the game has been completed
+//check if the wire minigame has been completed
 let wiresCompleted = false;
 
 //get the images
@@ -169,6 +169,14 @@ const UBER_IMAGE = document.createElement('img');
 
 //get the jumpscare sound
 const JUMPSCARE_AUDIO = new Audio('assets/audio/JumpscareScream.mp3');
+const UBER_AUDIO = new Audio('assets/audio/Day2_JumpscareViolin.mp3');
+
+//get the background music
+const DAY2_BGM = new Audio('assets/audio/Day2_Audio.mp3');
+
+//get the background SFX
+const DOORBELL_SFX = new Audio('assets/audio/Day2_Doorbell.mp3');
+const KNOCKING_SFX = new Audio('assets/audio/KnockingSFX.mp3');
 
 //get the x value of the closet
 let backgroundX;
@@ -176,8 +184,11 @@ let backgroundX;
 //get when the jumpscare happens
 let jumpscareTiming = 575;
 
-//get when the minigame is finished
+//get when the closet minigame is finished
 let closetCompleted = false;
+
+//get when the door minigame is finished
+let doorCompleted = false;
 
 /**
  * starts or resets the complete day 2 sequence
@@ -201,6 +212,8 @@ export function startDay2({ canvas, player, inputManager, actionMap, onDayComple
     state.fadeAlpha = 0;
     state.eWasDown = false;
     state.taskFinishedAt = 0;
+
+    DAY2_BGM.play();
 
     loadTaskAssets();
     resetDay2Tasks();
@@ -239,7 +252,6 @@ export function updateDay2() {
  */
 export function drawDay2() {
     if (state.mode === 'task') {
-        CV.clearCanvas();
         drawTask();
         if (state.secretGameOver) {
             drawRestartPrompt();
@@ -337,6 +349,8 @@ function resetDay2Tasks() {
     wiresCompleted = false;
     closetCompleted = false;
     backgroundX = -CANVAS.width / 2 + 27;
+
+    doorCompleted = false;
 }
 
 /**
@@ -351,13 +365,6 @@ function updateMapInteraction() {
     if (!canInteract() || !eTapped) return;
 
     if (getStage() === 'blinds') {
-        completeTask();
-        return;
-    }
-
-    if (getStage() === 'door'){
-        BRUSH.drawImage(UBERJS_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
-        BRUSH.drawImage(UBER_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
         completeTask();
         return;
     }
@@ -399,6 +406,7 @@ function startTask(taskName) {
     state.taskFinishedAt = 0;
 
     if (taskName === 'phone') startCall();
+    if (taskName === 'door') startDoor();
     if (taskName === 'closet') startCloset();
     if (taskName === 'wires') startWires();
 }
@@ -422,6 +430,23 @@ function completeTask() {
 
     state.mode = 'map';
     CV.setBackground(stageImages[getStage()]);
+    
+    if (getStage() === 'door'){
+        DOORBELL_SFX.play();
+        DOORBELL_SFX.loop = true;
+        KNOCKING_SFX.loop = false;
+    }
+    else if (getStage() === 'closet'){
+        KNOCKING_SFX.play();
+        KNOCKING_SFX.volume = 0.5;
+        KNOCKING_SFX.loop = true;
+        DOORBELL_SFX.loop = false;
+    }
+    else {
+        KNOCKING_SFX.loop = false;
+        DOORBELL_SFX.loop = false;
+    }
+
     centerPlayer();
 }
 
@@ -444,6 +469,7 @@ function centerPlayer() {
  */
 function updateTask() {
     if (state.currentTask === 'phone') updatePhone();
+    if (state.currentTask === 'door') updateDoor();
     if (state.currentTask === 'wires') updateWires();
     if (state.currentTask === 'closet') updateCloset();
 }
@@ -454,6 +480,7 @@ function updateTask() {
  */
 function drawTask() {
     if (state.currentTask === 'phone') drawPhone();
+    if (state.currentTask === 'door') drawDoor();
     if (state.currentTask === 'wires') drawWires();
     if (state.currentTask === 'closet') drawCloset();
 }
@@ -536,6 +563,35 @@ function drawCloset() {
 }
 
 /**
+ * updates the door task
+ * @returns {void}
+ */
+function updateDoor() {
+    if (!doorCompleted) return;
+
+    if (state.taskFinishedAt === 0) {
+        state.taskFinishedAt = Date.now();
+    }
+
+    if (Date.now() - state.taskFinishedAt >= 900) {
+        completeTask();
+    }
+}
+
+/**
+ * draws the door task
+ * @returns {void}
+ */
+function drawDoor() {
+    if (doorCompleted) {
+        BRUSH.drawImage(UBERJS_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+        return;
+    }
+
+    BRUSH.drawImage(UBER_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+}
+
+/**
  * Adds event listeners for the cursor
  * @returns {void}
  */
@@ -557,6 +613,7 @@ function removeTaskListeners() {
     document.body.removeEventListener('mousedown', checkMouseDown);
     document.body.removeEventListener('mouseup', checkMouseUp);
     window.removeEventListener('keydown', checkClosetDown);
+    document.body.removeEventListener('mousedown', checkUberStop);
 }
 
 /**
@@ -700,6 +757,7 @@ function drawButtons(){
         return;
     } else {
         BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301 * 1.4, CANVAS.height * 1.2);
+        BRUSH.drawImage(STICKY1_IMAGE, -200, 0, 1000, 500);
     }
 
     BRUSH.beginPath();
@@ -805,6 +863,7 @@ function trackMouseMove(mouseMoveEvent){
  * Starts the code
  */
 function startCall(){
+    CV.clearCanvas();
     phoneNumbers = ['Use ', 'Mouse ', 'To Call'];
     normalEnding = false;
     secretEnding = false;
@@ -851,6 +910,7 @@ function checkClosetDown(keydown){
  * Start the game
  */
 function startCloset(){
+    CV.clearCanvas();
     backgroundX = -CANVAS.width / 2 + 27;
     closetCompleted = false;
     addClosetListeners();
@@ -1039,6 +1099,7 @@ function resetWires() {
     greenStartY = originalGreenStartY;
     greenStartX = startX;
 
+    CV.clearCanvas();
     BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301 * 1.4, CANVAS.height * 1.2);
     BRUSH.font = '35px Arial';
     BRUSH.fillStyle = 'black';
@@ -1190,6 +1251,21 @@ function startWires(){
     greenStartX = startX;
     resetWires();
     addMouseListeners();
+}
+
+function addDoorListeners(){
+    document.body.addEventListener('mousedown', checkUberStop);
+}
+
+function checkUberStop(){
+    UBER_AUDIO.play();
+    doorCompleted = true;
+}
+
+function startDoor(){
+    CV.clearCanvas();
+    doorCompleted = false;
+    addDoorListeners();
 }
 
 /**

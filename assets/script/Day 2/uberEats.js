@@ -18,6 +18,9 @@ const BRUSH = CANVAS.getContext('2d');
 const PHONE_IMAGE = document.createElement('img');
 PHONE_IMAGE.src = '../../img/Day2Img/ian_png-removebg-preview.png';
 
+const STICKY1_IMAGE = document.createElement('img');
+STICKY1_IMAGE.src = '../../img/Day2Img/2_CloseSticky.png';
+
 //get the button input information
 let inputRadius = 40;
 let topButtonY = 200;
@@ -42,7 +45,7 @@ let collision9 = false;
 let collisionReset = false;
 let collisionVerify = false;
 
-//get te information about the mouse status
+//get te information about the mouse sstus
 let cursorX;
 let cursorY;
 let mouseClicked = false;
@@ -258,6 +261,7 @@ function checkSimilarity(){
  */
 function drawButtons(){
     BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301*1.4, CANVAS.height*1.2);
+    BRUSH.drawImage(STICKY1_IMAGE, -200, 0, 1000, 500);
     BRUSH.beginPath();
     BRUSH.arc(midButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
     BRUSH.strokeStyle = "grey";
