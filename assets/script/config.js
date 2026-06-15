@@ -44,13 +44,13 @@ export const GAME_CONFIG = {
             },
             width: 100,
             height: 200,
-            speed: 8
+            speed: 10
         }
     ],
 
     // Shared interaction hitboxes for every day 
     // (x,y) --> top-left corner
-    DEBUG_HITBOXES: false,
+    DEBUG_HITBOXES: true,
     HITBOXES: {
         day1: {
             sweep: { x: 1000, y: 50, w: 180, h: 180 },
@@ -69,6 +69,11 @@ export const GAME_CONFIG = {
             note2: { x: 330, y: 360, w: 180, h: 180 },
             blinds: { x: 600, y: 50, w: 400, h: 180 },
             closet: { x: 1300, y: 300, w: 180, h: 180 }
+        }
+    },
+    AUX_HITBOXES : {
+        day2: {
+            note: { x: 1200, y: 120, w: 220, h: 180 }
         }
     },
 

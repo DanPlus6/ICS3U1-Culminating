@@ -16,6 +16,7 @@ let CANVAS;
 let BRUSH;
 
 const stageOrder = ['blinds', 'phone', 'door', 'closet', 'wires'];
+const auxStageOrder = [null, 'note', null, null, null];
 
 const stageImages = {
     blinds: 'assets/img/Day2Img/2_Blinds.png',
@@ -230,6 +231,7 @@ export function updateDay2() {
 
     if (state.mode === 'task') {
         updateTask();
+        updateAuxTask();
         return;
     }
 
@@ -244,6 +246,7 @@ export function updateDay2() {
     }
 
     updateMapInteraction();
+    updateAuxMapInteraction();
 }
 
 /**
@@ -253,6 +256,7 @@ export function updateDay2() {
 export function drawDay2() {
     if (state.mode === 'task') {
         drawTask();
+        drawAuxTask();
         if (state.secretGameOver) {
             drawRestartPrompt();
         }
@@ -261,12 +265,13 @@ export function drawDay2() {
 
     CV.clearAndDraw();
 
-    if (canInteract()) {
+    if (canInteract() || canInteractAux()) {
         drawInteractPrompt();
     }
 
     if (GAME_CONFIG.DEBUG_HITBOXES) {
         drawHitbox();
+        drawAuxHitbox();
     }
 
     if (state.mode === 'fade') {
@@ -373,6 +378,19 @@ function updateMapInteraction() {
 }
 
 /**
+ * checks for map interaction input and starts the correct task
+ * @returns {void}
+ */
+function updateAuxMapInteraction() {
+    const eDown = actMap.isActive('interact');
+
+    console.log(getAuxStage());
+    if (!canInteractAux() || !eDown) return;
+    startAuxTask(getAuxStage());
+}
+
+
+/**
  * checks whether the player overlaps the current stage hitbox
  * @returns {boolean} true when the player can press e
  */
@@ -387,11 +405,40 @@ function canInteract() {
 }
 
 /**
+ * checks whether the player overlaps the current stage's auxiliary hitbox
+ * @returns {boolean} true when the player can press e
+ */
+function canInteractAux() {
+    const hitbox = GAME_CONFIG.AUX_HITBOXES.day2[getAuxStage()];
+    if (!hitbox) { console.log("no hitbox"); return false; }
+
+    // const state = PL.x < hitbox.x + hitbox.w &&
+    //     PL.x + PL.w > hitbox.x &&
+    //     PL.y < hitbox.y + hitbox.h &&
+    //     PL.y + PL.h > hitbox.y;
+
+    // console.log(state);
+    // return state;
+    return PL.x < hitbox.x + hitbox.w &&
+        PL.x + PL.w > hitbox.x &&
+        PL.y < hitbox.y + hitbox.h &&
+        PL.y + PL.h > hitbox.y;
+}
+
+/**
  * gets the active day 2 stage name
  * @returns {string} current stage id
  */
 function getStage() {
     return stageOrder[state.stageIndex];
+}
+
+/**
+ * gets the active day 2 auxiliary stage name
+ * @returns {string} current stage id
+ */
+function getAuxStage() {
+    return auxStageOrder[state.stageIndex];
 }
 
 /**
@@ -409,6 +456,20 @@ function startTask(taskName) {
     if (taskName === 'door') startDoor();
     if (taskName === 'closet') startCloset();
     if (taskName === 'wires') startWires();
+}
+
+/**
+ * starts one of the day 2 auxiliary tasks
+ * @param {string} taskName name of the task to start
+ * @returns {void}
+ */
+function startAuxTask(taskName) {
+    state.mode = 'task';
+    state.currentTask = taskName;
+    state.eWasDown = true;
+    state.taskFinishedAt = 0;
+
+    if (taskName === 'note') startCall();
 }
 
 /**
@@ -475,6 +536,14 @@ function updateTask() {
 }
 
 /**
+ * sends updates to the active auxiliary task
+ * @returns {void}
+ */
+function updateAuxTask() {
+    if (state.currentTask === 'phone') updateThing();
+}
+
+/**
  * sends drawing to the active task
  * @returns {void}
  */
@@ -483,6 +552,14 @@ function drawTask() {
     if (state.currentTask === 'door') drawDoor();
     if (state.currentTask === 'wires') drawWires();
     if (state.currentTask === 'closet') drawCloset();
+}
+
+/**
+ * sends drawing to the active task
+ * @returns {void}
+ */
+function drawAuxTask() {
+    if (state.currentTask === 'note') drawThing();
 }
 
 /**
@@ -1347,6 +1424,21 @@ function drawRestartPrompt() {
  */
 function drawHitbox() {
     const hitbox = GAME_CONFIG.HITBOXES.day2[getStage()];
+    if (!hitbox) return;
+
+    BRUSH.save();
+    BRUSH.strokeStyle = 'lime';
+    BRUSH.lineWidth = 3;
+    BRUSH.strokeRect(hitbox.x, hitbox.y, hitbox.w, hitbox.h);
+    BRUSH.restore();
+}
+
+/**
+ * draws the current shared auxiliary hitbox for manual tuning
+ * @returns {void}
+ */
+function drawAuxHitbox() {
+    const hitbox = GAME_CONFIG.AUX_HITBOXES.day2[getAuxStage()];
     if (!hitbox) return;
 
     BRUSH.save();
