@@ -10,6 +10,7 @@ import { Player } from './Classes/Player/Player.js';
 import { Canvas } from './Classes/GameScreen/Canvas.js';
 import { GAME_CONFIG } from './config.js';
 import { startDay1, updateDay1, drawDay1, isDay1Complete } from './Day 1/Day1.js';
+import { startDay3, updateDay3, drawDay3, isDay3Complete } from './Day 3/Day3.js';
 
 // +++++++++++++++++ Game State ++++++++++++++++++++
 let CV;
@@ -18,7 +19,11 @@ let gameActive = false;
 let gameRefresher = null;
 let gameTick = 0;
 let screenTransitioning = false;
-const gameState = { day1End: false };
+const gameState = {
+    activeDay: 1,
+    day1End: false,
+    day3End: false
+};
 
 // +++++++++++++++++ Input System ++++++++++++++++++++
 let iptManager;
@@ -47,10 +52,21 @@ function startGame() {
 
 /** Main game update loop */
 function refreshGame() {
-    updateDay1();
-    drawDay1();
+    if (gameState.activeDay === 1) {
+        updateDay1();
+        drawDay1();
+    }
 
-    if (isDay1Complete()) {
+    if (gameState.activeDay === 3) {
+        updateDay3();
+        drawDay3();
+    }
+
+    if (gameState.activeDay === 1 && isDay1Complete()) {
+        startDay3Sequence();
+    }
+
+    if (gameState.activeDay === 3 && isDay3Complete()) {
         gameActive = false;
         if (gameRefresher) clearInterval(gameRefresher);
         gameRefresher = null;
@@ -96,6 +112,9 @@ function buildGame() {
     PL.y = Math.round((CV.HEIGHT - PL.h) / 2);
 
     CV.addEntity(PL);
+    gameState.activeDay = 1;
+    gameState.day1End = false;
+    gameState.day3End = false;
     startDay1({
         canvas: CV,
         player: PL,
@@ -104,6 +123,17 @@ function buildGame() {
         onDayComplete: () => { gameState.day1End = true; }
     });
     CV.clearAndDraw();
+}
+
+function startDay3Sequence() {
+    gameState.activeDay = 3;
+    startDay3({
+        canvas: CV,
+        player: PL,
+        inputManager: iptManager,
+        actionMap: actMapper,
+        onDayComplete: () => { gameState.day3End = true; }
+    });
 }
 
 // +++++++++++++++++ Event Listeners ++++++++++++++++++++
