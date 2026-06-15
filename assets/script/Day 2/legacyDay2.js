@@ -96,7 +96,7 @@ let phoneNumbers;
 
 //stores the correct phone numbers to call
 let uberNumber = 6475392049;
-let secretNumber = 4168508495;
+let secretNumber = 4162848539;
 
 //stores the different ending activations
 let normalEnding = false;
@@ -540,7 +540,7 @@ function updateTask() {
  * @returns {void}
  */
 function updateAuxTask() {
-    if (state.currentTask === 'phone') updateThing();
+    if (state.currentTask === 'phone') updatePhone();
 }
 
 /**
@@ -559,7 +559,7 @@ function drawTask() {
  * @returns {void}
  */
 function drawAuxTask() {
-    if (state.currentTask === 'note') drawThing();
+    if (state.currentTask === 'note') drawNotes();
 }
 
 /**
@@ -945,6 +945,107 @@ function startCall(){
     normalEnding = false;
     secretEnding = false;
     addCursorListeners();
+}
+
+/**
+ * Draws the buttons and input for aux phone task
+ */
+function drawNotes(){
+    if (secretEnding) {
+        BRUSH.drawImage(SECRET_ENDING_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+        return;
+    } else {
+        BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301 * 1.4, CANVAS.height * 1.2);
+        BRUSH.drawImage(STICKY2_IMAGE, -200, 0, 1000, 500);
+    }
+
+    BRUSH.beginPath();
+    BRUSH.arc(midButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(leftButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(rightButtonX, lastButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(leftButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(midButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(rightButtonX, botButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(leftButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(midButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(rightButtonX, midButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(leftButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(midButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.beginPath();
+    BRUSH.arc(rightButtonX, topButtonY, inputRadius, 0, 2*Math.PI);
+    BRUSH.strokeStyle = 'grey';
+    BRUSH.stroke();
+    BRUSH.fillStyle = 'grey';
+    BRUSH.fill();
+    BRUSH.font = '40px Arial';
+    BRUSH.fillStyle = 'black';
+    BRUSH.fillText('0', midButtonX - 10, lastButtonY + 15);
+    BRUSH.fillText('1', leftButtonX - 10, botButtonY + 15);
+    BRUSH.fillText('2', midButtonX - 10, botButtonY + 15);
+    BRUSH.fillText('3', rightButtonX - 10, botButtonY + 15);
+    BRUSH.fillText('4', leftButtonX - 10, midButtonY + 15);
+    BRUSH.fillText('5', midButtonX - 10, midButtonY + 15);
+    BRUSH.fillText('6', rightButtonX - 10, midButtonY + 15);
+    BRUSH.fillText('7', leftButtonX - 10, topButtonY + 15);
+    BRUSH.fillText('8', midButtonX - 10, topButtonY + 15);
+    BRUSH.fillText('9', rightButtonX - 10, topButtonY + 15);
+    BRUSH.fillText('OK', rightButtonX - 23, lastButtonY + 15);
+    BRUSH.fillText('X', leftButtonX - 13, lastButtonY + 15);
+    BRUSH.fillText(phoneNumbers.join(''), ((CANVAS.width / 5) * 2) + 45, 150);
 }
 
 //get the functions for the closet minigame
