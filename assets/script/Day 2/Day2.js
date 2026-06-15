@@ -293,6 +293,14 @@ export function drawDay2() {
     }
 }
 
+/** callback to stop all audio from day 2 */
+function stopDay2Audio() {
+    for (const audio of [DAY2_BGM, DOORBELL_SFX, KNOCKING_SFX, UBER_AUDIO, JUMPSCARE_AUDIO]) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
+
 /**
  * checks if day 2 has finished
  * @returns true when the final fade is complete
@@ -314,7 +322,7 @@ export function isDay2SecretGameOver() {
  */
 export function stopDay2() {
     removeTaskListeners();
-    DAY2_BGM.pause();
+    stopDay2Audio();
 }
 
 /**
@@ -1492,6 +1500,7 @@ function updateFade() {
     if (state.fadeAlpha < 1) return;
 
     state.done = true;
+    stopDay2Audio
     if (onComplete) onComplete();
 }
 
