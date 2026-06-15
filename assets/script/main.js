@@ -58,24 +58,6 @@ function startGame() {
 
 /** Main game update loop */
 function refreshGame() {
-    if (gameState.activeDay === 1) {
-        updateDay1();
-        drawDay1();
-    }
-
-    if (gameState.activeDay === 3) {
-        updateDay3();
-        drawDay3();
-    }
-
-    if (gameState.activeDay === 1 && isDay1Complete()) {
-        startDay3Sequence();
-    }
-
-    if (gameState.activeDay === 3 && isDay3Complete()) {
-        gameActive = false;
-        if (gameRefresher) clearInterval(gameRefresher);
-        gameRefresher = null;
     if (gameState.currentDay === 1) {
         updateDay1();
         drawDay1();
@@ -100,6 +82,15 @@ function refreshGame() {
             gameRefresher = null;
         } else if (isDay2Complete()) {
             gameState.currentDay = 3;
+            gameActive = false;
+            if (gameRefresher) clearInterval(gameRefresher);
+            gameRefresher = null;
+        }
+    } else if (gameState.currentDay === 3) {
+        updateDay3();
+        drawDay3();
+
+        if (isDay3Complete()) {
             gameActive = false;
             if (gameRefresher) clearInterval(gameRefresher);
             gameRefresher = null;
