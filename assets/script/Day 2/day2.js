@@ -806,4 +806,3 @@ function startWires(){
     draw();
     addMouseListeners();
 }
-w
