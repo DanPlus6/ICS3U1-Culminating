@@ -48,6 +48,9 @@ export const GAME_CONFIG = {
         }
     ],
 
+    // Shared interaction hitboxes for every day 
+    // (x,y) --> top-left corner
+    DEBUG_HITBOXES: false,
     // Shared interaction hitboxes for every day.
     // x and y are the top-left corner. w and h are width and height.
     // Add day2 and day3 sections here when those day files are ready.

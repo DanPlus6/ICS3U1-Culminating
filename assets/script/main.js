@@ -25,19 +25,6 @@ let iptManager;
 let actMapper;
 
 // +++++++++++++++++ Game Loop ++++++++++++++++++++
-/** Toggle pause/resume game */
-function toggleGame() {
-    if (screenTransitioning) return;
-    if (!gameActive) {
-        gameActive = true;
-        gameRefresher = setInterval(refreshGame, GAME_CONFIG.REFRESH_INTERVAL_MS);
-    } else {
-        gameActive = false;
-        if (gameRefresher) clearInterval(gameRefresher);
-        gameRefresher = null;
-    }
-}
-
 /** Reset game to initial state */
 function resetGame() {
     CV = new Canvas(GAME_CONFIG.CANVAS_ID, GAME_CONFIG.CANVAS_SCALE);
@@ -114,26 +101,14 @@ function buildGame() {
         player: PL,
         inputManager: iptManager,
         actionMap: actMapper,
-        onDayComplete: () => {
-            gameState.day1End = true;
-            console.log('Day 1 ended. Load Day 2 here.');
-        }
+        onDayComplete: () => { gameState.day1End = true; }
     });
     CV.clearAndDraw();
-
-    // TODO: Add entity spawning logic 🫠
 }
 
 // +++++++++++++++++ Event Listeners ++++++++++++++++++++
 /** Attach persistent event listeners */
 function addBaseListeners() {
-    // Pause/Resume with P key
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'p' || e.key === 'P') {
-            toggleGame();
-        }
-    });
-
     // Restart with R key
     window.addEventListener('keydown', (e) => {
         if (e.key === 'r' || e.key === 'R') {
