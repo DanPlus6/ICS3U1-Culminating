@@ -51,13 +51,18 @@ export const GAME_CONFIG = {
     // Shared interaction hitboxes for every day.
     // x and y are the top-left corner. w and h are width and height.
     // Add day2 and day3 sections here when those day files are ready.
-    DEBUG_HITBOXES: false,
+    DEBUG_HITBOXES: true,
     HITBOXES: {
         day1: {
-            sweep: { x: 820, y: 300, w: 180, h: 180 },
-            study: { x: 940, y: 210, w: 220, h: 180 },
-            cook: { x: 260, y: 210, w: 240, h: 220 },
-            bed: { x: 680, y: 520, w: 260, h: 220 }
+            //blinds: { x: 600, y: 50, w: 400, h: 180 },
+            //note1: { x: 250, y: 50, w: 180, h: 180 },
+            //note2: { x: 330, y: 360, w: 180, h: 180 },
+            //door: { x: 100, y: 490, w: 180, h: 180 },
+            //closet: { x: 1300, y: 300, w: 180, h: 180 },
+            sweep: { x: 1000, y: 50, w: 180, h: 180 },
+            study: { x: 1200, y: 120, w: 220, h: 180 },
+            cook: { x: 80, y: 90, w: 240, h: 220 },
+            bed: { x: 1050, y: 450, w: 400, h: 300 }
         },
         day2: {},
         day3: {}

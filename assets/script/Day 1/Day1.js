@@ -1,19 +1,22 @@
 /**
- * MARCUS K.
+ *marcus k
  */
 
 'use strict';
 
 import { GAME_CONFIG } from '../config.js';
 
+//shared references provided by main.js when day 1 starts
 let CV;
 let PL;
 let input;
 let actMap;
 let onComplete;
 
+//order of day 1 map stages and task interactions
 const stageOrder = ['sweep', 'study', 'cook', 'bed'];
 
+//full map images shown between minigames
 const stageImages = {
     sweep: 'assets/img/Day1Img/1_Sweep.png',
     study: 'assets/img/Day1Img/1_Study.png',
@@ -21,6 +24,7 @@ const stageImages = {
     bed: 'assets/img/Day1Img/1_Bed.png'
 };
 
+//close up task images and arrow prompts used by the day 1 minigames
 const taskAssets = {
     sweepLeft: 'assets/img/Day1Img/1_CloseSweep2.png',
     sweepRight: 'assets/img/Day1Img/1_CloseSweep1.png',
@@ -40,6 +44,7 @@ const taskAssets = {
     }
 };
 
+//current day 1 progress and screen mode
 const state = {
     stageIndex: 0,
     mode: 'map',
@@ -49,12 +54,23 @@ const state = {
     eWasDown: false
 };
 
+//runtime data for each minigame
 const task = {
     sweep: {},
     study: {},
     cook: {}
 };
 
+/**
+ *starts or resets the complete day 1 sequence
+ *@param {object} args day 1 stuff from main.js
+ *@param {object} args.canvas canvas wrapper used for drawing
+ *@param {object} args.player player used during map sections
+ *@param {object} args.inputManager keyboard input manager
+ *@param {object} args.actionMap action map for player actions
+ *@param {function} args.onDayComplete callback fired when day 1 ends
+ *@returns {void}
+ */
 export function startDay1({ canvas, player, inputManager, actionMap, onDayComplete }) {
     CV = canvas;
     PL = player;
@@ -74,6 +90,10 @@ export function startDay1({ canvas, player, inputManager, actionMap, onDayComple
     centerPlayer();
 }
 
+/**
+ *updates day 1 once per game tick
+ *@returns {void}
+ */
 export function updateDay1() {
     if (state.done) return;
 
@@ -95,6 +115,10 @@ export function updateDay1() {
     updateMapInteraction();
 }
 
+/**
+ *draws the current day 1 screen
+ *@returns {void}
+ */
 export function drawDay1() {
     if (state.mode === 'task') {
         CV.clearCanvas();
@@ -117,10 +141,18 @@ export function drawDay1() {
     }
 }
 
+/**
+ *reports whether day 1 has finished
+ *@returns {boolean} true when the bed interaction fade is complete
+ */
 export function isDay1Complete() {
     return state.done;
 }
 
+/**
+ *loads all task image objects into the task state
+ *@returns {void}
+ */
 function buildTaskAssets() {
     const assets = taskAssets;
 
@@ -163,12 +195,21 @@ function buildTaskAssets() {
     };
 }
 
+/**
+ *creates an image object from an asset path
+ *@param {string} path relative path to the image file
+ *@returns {object} loaded image object
+ */
 function makeImage(path) {
     const image = new Image();
     image.src = path;
     return image;
 }
 
+/**
+ *checks for map interaction input and starts the correct task
+ *@returns {void}
+ */
 function updateMapInteraction() {
     const eDown = actMap.isActive('interact');
     const eTapped = eDown && !state.eWasDown;
@@ -186,6 +227,10 @@ function updateMapInteraction() {
     startTask(stage);
 }
 
+/**
+ *checks whether the player overlaps the current stage hitbox
+ *@returns {boolean} true when the player can press e
+ */
 function canInteract() {
     const hitbox = GAME_CONFIG.HITBOXES.day1[getStage()];
     if (!hitbox) return false;
@@ -196,10 +241,19 @@ function canInteract() {
         PL.y + PL.h > hitbox.y;
 }
 
+/**
+ *gets the active day 1 stage name
+ *@returns {string} current stage id
+ */
 function getStage() {
     return stageOrder[state.stageIndex];
 }
 
+/**
+ *starts one of the day 1 minigames
+ *@param {string} taskName name of the task to start
+ *@returns {void}
+ */
 function startTask(taskName) {
     state.mode = 'task';
     state.currentTask = taskName;
@@ -230,6 +284,10 @@ function startTask(taskName) {
     }
 }
 
+/**
+ *moves from a finished task to the next map stage
+ *@returns {void}
+ */
 function completeTask() {
     state.mode = 'map';
     state.currentTask = null;
@@ -240,6 +298,10 @@ function completeTask() {
     centerPlayer();
 }
 
+/**
+ *puts the player back in the center of the canvas
+ *@returns {void}
+ */
 function centerPlayer() {
     CV.rmEntity(PL);
     PL.x = Math.round((CV.WIDTH - PL.w) / 2);
@@ -249,18 +311,30 @@ function centerPlayer() {
     CV.addEntity(PL);
 }
 
+/**
+ *sends updates to the active minigame
+ *@returns {void}
+ */
 function updateTask() {
     if (state.currentTask === 'sweep') updateSweep();
     if (state.currentTask === 'study') updateStudy();
     if (state.currentTask === 'cook') updateCook();
 }
 
+/**
+ *sends drawing to the active minigame
+ *@returns {void}
+ */
 function drawTask() {
     if (state.currentTask === 'sweep') drawSweep();
     if (state.currentTask === 'study') drawStudy();
     if (state.currentTask === 'cook') drawCook();
 }
 
+/**
+ *updates the sweep minigame key swapping
+ *@returns {void}
+ */
 function updateSweep() {
     const sweep = task.sweep;
     const down = input.isDown(sweep.expectedKey);
@@ -279,6 +353,10 @@ function updateSweep() {
     }
 }
 
+/**
+ *draws the sweep minigame
+ *@returns {void}
+ */
 function drawSweep() {
     const sweep = task.sweep;
     const cx = CV.WIDTH / 2;
@@ -293,6 +371,10 @@ function drawSweep() {
     drawCounter(sweep.completed, sweep.total, cy + broomSize / 2 + 36);
 }
 
+/**
+ *updates the study minigame hold input
+ *@returns {void}
+ */
 function updateStudy() {
     const study = task.study;
     const downHeld = input.isDown('ArrowDown');
@@ -322,6 +404,10 @@ function updateStudy() {
     }
 }
 
+/**
+ *draws the study minigame
+ *@returns {void}
+ */
 function drawStudy() {
     const study = task.study;
     const cx = CV.WIDTH / 2;
@@ -337,11 +423,16 @@ function drawStudy() {
     drawCounter(study.completed, study.total, cy + studySize / 2 + 36);
 }
 
+/**
+ *updates the cooking prompt minigame
+ *@returns {void}
+ */
 function updateCook() {
     const cook = task.cook;
     const down = input.isDown(cook.currentPrompt);
     const tapped = down && !cook.keyWasDown[cook.currentPrompt];
 
+    //record each arrow key state so one held key only counts once
     for (const key of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) {
         cook.keyWasDown[key] = input.isDown(key);
     }
@@ -359,10 +450,15 @@ function updateCook() {
     setNextCookPrompt();
 }
 
+/**
+ *picks the next random cooking arrow prompt
+ *@returns {void}
+ */
 function setNextCookPrompt() {
     const options = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     let next;
 
+    //keep rolling until the next prompt is different
     do {
         next = options[Math.floor(Math.random() * options.length)];
     } while (next === task.cook.currentPrompt);
@@ -371,6 +467,10 @@ function setNextCookPrompt() {
     task.cook.keyWasDown = {};
 }
 
+/**
+ *draws the cooking minigame
+ *@returns {void}
+ */
 function drawCook() {
     const cook = task.cook;
     const cx = CV.WIDTH / 2;
@@ -382,6 +482,10 @@ function drawCook() {
     drawCounter(cook.completed, cook.total, cy + arrowSize / 2 + 36);
 }
 
+/**
+ *updates the end of day fade
+ *@returns {void}
+ */
 function updateFade() {
     state.fadeAlpha = Math.min(1, state.fadeAlpha + 0.02);
 
@@ -391,6 +495,10 @@ function updateFade() {
     if (onComplete) onComplete();
 }
 
+/**
+ *draws the interact prompt at the bottom of the screen
+ *@returns {void}
+ */
 function drawInteractPrompt() {
     const text = 'Interact [E]';
     const cx = CV.WIDTH / 2;
@@ -417,6 +525,10 @@ function drawInteractPrompt() {
     CV.BRUSH.restore();
 }
 
+/**
+ *draws the current shared hitbox for manual tuning
+ *@returns {void}
+ */
 function drawHitbox() {
     const hitbox = GAME_CONFIG.HITBOXES.day1[getStage()];
     if (!hitbox) return;
@@ -428,6 +540,13 @@ function drawHitbox() {
     CV.BRUSH.restore();
 }
 
+/**
+ *draws a progress counter for the active minigame
+ *@param {number} completed number of successful inputs
+ *@param {number} total number of required inputs
+ *@param {number} y vertical screen position for the counter
+ *@returns {void}
+ */
 function drawCounter(completed, total, y) {
     CV.BRUSH.save();
     CV.BRUSH.font = 'bold 22px sans-serif';
@@ -437,6 +556,10 @@ function drawCounter(completed, total, y) {
     CV.BRUSH.restore();
 }
 
+/**
+ *draws the fade to black overlay
+ *@returns {void}
+ */
 function drawFade() {
     CV.BRUSH.save();
     CV.BRUSH.globalAlpha = state.fadeAlpha;
