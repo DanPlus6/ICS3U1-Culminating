@@ -50,7 +50,7 @@ export const GAME_CONFIG = {
 
     // Shared interaction hitboxes for every day 
     // (x,y) --> top-left corner
-    DEBUG_HITBOXES: true,
+    DEBUG_HITBOXES: false,
     HITBOXES: {
         day1: {
             sweep: { x: 1000, y: 50, w: 180, h: 180 },
@@ -63,6 +63,7 @@ export const GAME_CONFIG = {
             phone: { x: 250, y: 50, w: 180, h: 180 },
             blinds: { x: 600, y: 50, w: 400, h: 180 },
             door: { x: 100, y: 490, w: 180, h: 180 },
+            door2: { x: 1200, y: 120, w: 220, h: 180 },
             wires: { x: 1050, y: 450, w: 400, h: 300 }
         },
         day3: {
