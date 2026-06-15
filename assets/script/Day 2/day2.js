@@ -19,8 +19,10 @@ let cursorX;
 let cursorY;
 let mouseClicked = false;
 
-//get the varaibles for where to draw the inputs
+//get the varibles for where to draw the inputs
+//the size of the circles
 let inputRadius = 40;
+let circleRadius = inputRadius;
 
 //variables for the inputs in the phone minigame
 let topButtonY = 200;
