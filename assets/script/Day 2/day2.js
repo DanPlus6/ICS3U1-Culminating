@@ -6,6 +6,7 @@
 
 import { GAME_CONFIG } from '../config.js';
 
+//Game essentials
 let CV;
 let PL;
 let input;
@@ -15,6 +16,7 @@ let onComplete;
 let CANVAS;
 let BRUSH;
 
+//task essentials
 const stageOrder = ['blinds', 'phone', 'door', 'closet', 'wires'];
 const auxStageOrder = [null, 'note', null, null, null];
 
@@ -193,8 +195,11 @@ let doorCompleted = false;
 
 /**
  * starts or resets the complete day 2 sequence
- * @param {object} args day 2 references from main.js
- * @returns {void}
+ * @param {object} param.canvas reference to game canvas for day 2
+ * @param {object} param.player reference to player object for day 2
+ * @param {object} param.inputManager reference to input manager object for day 2
+ * @param {object} param.actionMap reference to action mapper for day 2
+ * @param {object} param.onDayComplete day completion state
  */
 export function startDay2({ canvas, player, inputManager, actionMap, onDayComplete }) {
     CV = canvas;
@@ -224,22 +229,26 @@ export function startDay2({ canvas, player, inputManager, actionMap, onDayComple
 
 /**
  * updates day 2 once per game tick
- * @returns {void}
+ * @returns if the player is doing a task or is in the transition between the days
  */
 export function updateDay2() {
+    //check if the current day is over
     if (state.done || state.secretGameOver) return;
 
+    //check if the player is doing a task
     if (state.mode === 'task') {
         updateTask();
         updateAuxTask();
         return;
     }
 
+    //check if the player is in the transition between days
     if (state.mode === 'fade') {
         updateFade();
         return;
     }
 
+    //updates the player's position
     PL.update();
     if (PL.oldX !== PL.x || PL.oldY !== PL.y) {
         CV.update(PL);
@@ -251,9 +260,10 @@ export function updateDay2() {
 
 /**
  * draws the current day 2 screen
- * @returns {void}
+ * @returns if the player is doing a task
  */
 export function drawDay2() {
+    //check if the player is doing a task
     if (state.mode === 'task') {
         drawTask();
         drawAuxTask();
@@ -265,39 +275,41 @@ export function drawDay2() {
 
     CV.clearAndDraw();
 
+    //check if the player can interact with the task or auxiliary task
     if (canInteract() || canInteractAux()) {
         drawInteractPrompt();
     }
 
+    //check if there are debug mode is enabled for hitboxes
     if (GAME_CONFIG.DEBUG_HITBOXES) {
         drawHitbox();
         drawAuxHitbox();
     }
 
+    //check if the player is currently in the transition between days
     if (state.mode === 'fade') {
         drawFade();
     }
 }
 
 /**
- * reports whether day 2 has finished
- * @returns {boolean} true when the final fade is complete
+ * checks if day 2 has finished
+ * @returns true when the final fade is complete
  */
 export function isDay2Complete() {
     return state.done;
 }
 
 /**
- * reports whether the secret ending ended the game
- * @returns {boolean} true when day 2 should stop on the Mom ending screen
+ * checks whether the player has currently reached the secret ending
+ * @returns true when the player has reached the secret ending screen
  */
 export function isDay2SecretGameOver() {
     return state.secretGameOver;
 }
 
 /**
- * clears task listeners if the whole game restarts during a day 2 task
- * @returns {void}
+ * clears all event listeners if the whole game restarts during a day 2 task
  */
 export function stopDay2() {
     removeTaskListeners();
@@ -305,7 +317,6 @@ export function stopDay2() {
 
 /**
  * loads all day 2 image objects
- * @returns {void}
  */
 function loadTaskAssets() {
     PHONE_IMAGE.src = taskImages.phone;
@@ -322,7 +333,6 @@ function loadTaskAssets() {
 
 /**
  * resets all day 2 task variables
- * @returns {void}
  */
 function resetDay2Tasks() {
     inputRadius = 40;
@@ -359,8 +369,8 @@ function resetDay2Tasks() {
 }
 
 /**
- * checks for map interaction input and starts the correct task
- * @returns {void}
+ * checks for the player input and starts the correct task
+ * @returns if the the player cannot interact with anything, is not interacting or task the player is doing is the blinds
  */
 function updateMapInteraction() {
     const eDown = actMap.isActive('interact');
@@ -378,8 +388,8 @@ function updateMapInteraction() {
 }
 
 /**
- * checks for map interaction input and starts the correct task
- * @returns {void}
+ * checks for the player input and starts the correct auxiliary task
+ * @returns if the player is not interacting or cannot interact
  */
 function updateAuxMapInteraction() {
     const eDown = actMap.isActive('interact');
@@ -390,8 +400,8 @@ function updateAuxMapInteraction() {
 
 
 /**
- * checks whether the player overlaps the current stage hitbox
- * @returns {boolean} true when the player can press e
+ * checks if the player overlaps the current stage hitbox
+ * @returns true when the player can press e -- false if not
  */
 function canInteract() {
     const hitbox = GAME_CONFIG.HITBOXES.day2[getStage()];
@@ -404,8 +414,8 @@ function canInteract() {
 }
 
 /**
- * checks whether the player overlaps the current stage's auxiliary hitbox
- * @returns {boolean} true when the player can press e
+ * checks if the player overlaps the current stage's auxiliary hitbox
+ * @returns true when the player can press e -- false if not
  */
 function canInteractAux() {
     const hitbox = GAME_CONFIG.AUX_HITBOXES.day2[getAuxStage()];
@@ -419,7 +429,7 @@ function canInteractAux() {
 
 /**
  * gets the active day 2 stage name
- * @returns {string} current stage id
+ * @returns the current stage id
  */
 function getStage() {
     return stageOrder[state.stageIndex];
@@ -427,7 +437,7 @@ function getStage() {
 
 /**
  * gets the active day 2 auxiliary stage name
- * @returns {string} current stage id
+ * @returns the current stage id
  */
 function getAuxStage() {
     return auxStageOrder[state.stageIndex];
@@ -436,7 +446,6 @@ function getAuxStage() {
 /**
  * starts one of the day 2 tasks
  * @param {string} taskName name of the task to start
- * @returns {void}
  */
 function startTask(taskName) {
     state.mode = 'task';
@@ -452,8 +461,7 @@ function startTask(taskName) {
 
 /**
  * starts one of the day 2 auxiliary tasks
- * @param {string} taskName name of the task to start
- * @returns {void}
+ * @param {string} taskName name of the auxiliary task to start
  */
 function startAuxTask(taskName) {
     state.mode = 'task';
@@ -465,7 +473,7 @@ function startAuxTask(taskName) {
 }
 
 /**
- * moves from a finished task to the next map stage
+ * moves from the finished task to the map containing the next task
  * @returns {void}
  */
 function completeTask() {
@@ -475,6 +483,7 @@ function completeTask() {
     state.eWasDown = true;
     state.stageIndex++;
 
+    //check if all tasks are completed to proceed to transition to the next day
     if (state.stageIndex >= stageOrder.length) {
         state.mode = 'fade';
         state.fadeAlpha = 0;
@@ -484,17 +493,20 @@ function completeTask() {
     state.mode = 'map';
     CV.setBackground(stageImages[getStage()]);
     
+    //if the current stage is the door task
     if (getStage() === 'door'){
         DOORBELL_SFX.play();
         DOORBELL_SFX.loop = true;
         KNOCKING_SFX.loop = false;
     }
+    //if the current stage is the closet task
     else if (getStage() === 'closet'){
         KNOCKING_SFX.play();
         KNOCKING_SFX.volume = 0.5;
         KNOCKING_SFX.loop = true;
         DOORBELL_SFX.loop = false;
     }
+    //if the current stage is neither of those
     else {
         KNOCKING_SFX.loop = false;
         DOORBELL_SFX.loop = false;
@@ -505,7 +517,6 @@ function completeTask() {
 
 /**
  * puts the player back in the center of the canvas
- * @returns {void}
  */
 function centerPlayer() {
     CV.rmEntity(PL);
@@ -521,56 +532,67 @@ function centerPlayer() {
  * @returns {void}
  */
 function updateTask() {
+    //check if the current task is the phone task
     if (state.currentTask === 'phone') updatePhone();
+    //check if the current task is the door task
     if (state.currentTask === 'door') updateDoor();
+    //check if the current task is the wires task
     if (state.currentTask === 'wires') updateWires();
+    //check if the current task is the closet task
     if (state.currentTask === 'closet') updateCloset();
 }
 
 /**
  * sends updates to the active auxiliary task
- * @returns {void}
  */
 function updateAuxTask() {
+    //check if the current task is the auxiliary phone task
     if (state.currentTask === 'note') updatePhone();
 }
 
 /**
  * sends drawing to the active task
- * @returns {void}
  */
 function drawTask() {
+    //check if the current task is the phone task
     if (state.currentTask === 'phone') drawPhone();
+    //check if the current task is the door task
     if (state.currentTask === 'door') drawDoor();
+    //check if the current task is the wires task
     if (state.currentTask === 'wires') drawWires();
+    //check if the current task is the closet task
     if (state.currentTask === 'closet') drawCloset();
 }
 
 /**
  * sends drawing to the active task
- * @returns {void}
  */
 function drawAuxTask() {
+    //check if the current task is the auxiliary phone task
     if (state.currentTask === 'note') drawNotes();
 }
 
 /**
  * updates the phone task
- * @returns {void}
+ * @returns if the secret ending is reached
  */
 function updatePhone() {
+    //check if the current pathway is neither the normal ending or secret ending
     if (!normalEnding && !secretEnding) return;
 
+    //check if the player has reached the secret ending
     if (secretEnding) {
         removeTaskListeners();
         state.secretGameOver = true;
         return;
     }
 
+    //track when phone task was finished
     if (state.taskFinishedAt === 0) {
         state.taskFinishedAt = Date.now();
     }
 
+    //complete task after buffer time has passed
     if (Date.now() - state.taskFinishedAt >= 900) {
         completeTask();
     }
@@ -578,7 +600,6 @@ function updatePhone() {
 
 /**
  * draws the phone task
- * @returns {void}
  */
 function drawPhone() {
     drawButtons();
@@ -586,7 +607,6 @@ function drawPhone() {
 
 /**
  * updates the wires task
- * @returns {void}
  */
 function updateWires() {
     if (wiresCompleted) {
@@ -596,7 +616,6 @@ function updateWires() {
 
 /**
  * draws the wires task
- * @returns {void}
  */
 function drawWires() {
     draw();
@@ -604,15 +623,17 @@ function drawWires() {
 
 /**
  * updates the closet task
- * @returns {void}
+ * @returns if the closet is not completed
  */
 function updateCloset() {
     if (!closetCompleted) return;
 
+    //track when the closet task was completed
     if (state.taskFinishedAt === 0) {
         state.taskFinishedAt = Date.now();
     }
 
+    //complete task after buffer time has passed
     if (Date.now() - state.taskFinishedAt >= 900) {
         completeTask();
     }
@@ -620,9 +641,10 @@ function updateCloset() {
 
 /**
  * draws the closet task
- * @returns {void}
+ * @returns if the closet has been completed
  */
 function drawCloset() {
+    //check if the closet task has been completed
     if (closetCompleted) {
         BRUSH.drawImage(JUMPSCARE_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
         return;
@@ -633,15 +655,18 @@ function drawCloset() {
 
 /**
  * updates the door task
- * @returns {void}
+ * @returns if the door task has not been completed
  */
 function updateDoor() {
+    //check if the door task has not been completed
     if (!doorCompleted) return;
 
+    //check when the door task was finished
     if (state.taskFinishedAt === 0) {
         state.taskFinishedAt = Date.now();
     }
 
+    //complete task after buffer time has passed
     if (Date.now() - state.taskFinishedAt >= 900) {
         completeTask();
     }
@@ -649,9 +674,10 @@ function updateDoor() {
 
 /**
  * draws the door task
- * @returns {void}
+ * @returns if the door task has been completed
  */
 function drawDoor() {
+    //check if the door task has been completed
     if (doorCompleted) {
         BRUSH.drawImage(UBERJS_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
         return;
@@ -662,7 +688,6 @@ function drawDoor() {
 
 /**
  * Adds event listeners for the cursor
- * @returns {void}
  */
 function addCursorListeners() {
     document.body.addEventListener('mousemove', trackMouseMove);
@@ -671,8 +696,7 @@ function addCursorListeners() {
 }
 
 /**
- * removes active task listeners
- * @returns {void}
+ * removes all task listeners
  */
 function removeTaskListeners() {
     document.body.removeEventListener('mousemove', trackMouseMove);
@@ -686,8 +710,8 @@ function removeTaskListeners() {
 }
 
 /**
- * gets mouse position relative to the canvas
- * @param {MouseEvent} mouseEvent mouse event
+ * gets the mouse position relative to the canvas
+ * @param {MouseEvent} mouseEvent information about the mouse position
  * @returns {{x: number, y: number}} canvas coordinates
  */
 function getCanvasPoint(mouseEvent) {
@@ -706,9 +730,10 @@ function getCanvasPoint(mouseEvent) {
  * Checks if the cursor is on the button
  * @param {number} buttonX The X position of the button
  * @param {number} buttonY The Y position of the button
- * @returns {boolean} true if there is a collision, false if there isn't
+ * @returns true if there is a collision -- false if there isn't
  */
 function buttonsCollide(buttonX, buttonY){
+    //check if the cursor collides with the buttons
     if (cursorX > buttonX - inputRadius && cursorX < buttonX + inputRadius && cursorY > buttonY - inputRadius && cursorY < buttonY + inputRadius){
         return true;
     }
@@ -804,10 +829,12 @@ function checkRelease(mouseUpEvent){
  * Checks if the user input is the same as the phone numbers
  */
 function checkSimilarity(){
+    //check if the phoneNumber is the same as the uber number
     if (phoneNumbers.join('') == uberNumber){
         phoneNumbers = ['Calling ', 'Uber ', 'Eats'];
         normalEnding = true;
     }
+    //check if the phoneNumber is the same as the secret number
     else if (phoneNumbers.join('') == secretNumber){
         phoneNumbers = ['Calling ', 'Mom'];
         secretEnding = true;
@@ -819,8 +846,10 @@ function checkSimilarity(){
 
 /**
  * Draws the buttons and input
+ * @returns if the player has reached the secret ending
  */
 function drawButtons(){
+    //check if the player is at the secret ending
     if (secretEnding) {
         BRUSH.drawImage(SECRET_ENDING_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
         return;
@@ -941,8 +970,10 @@ function startCall(){
 
 /**
  * Draws the buttons and input for aux phone task
+ * @returns when the player has reached the secret ending
  */
 function drawNotes(){
+    //checks if the player has reached the secret ending
     if (secretEnding) {
         BRUSH.drawImage(SECRET_ENDING_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
         return;
