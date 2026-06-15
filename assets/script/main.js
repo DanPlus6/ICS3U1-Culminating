@@ -11,6 +11,7 @@ import { Canvas } from './Classes/GameScreen/Canvas.js';
 import { GAME_CONFIG } from './config.js';
 import { startDay1, updateDay1, drawDay1, isDay1Complete } from './Day 1/Day1.js';
 import { startDay3, updateDay3, drawDay3, isDay3Complete } from './Day 3/Day3.js';
+import { startDay2, updateDay2, drawDay2, isDay2Complete, isDay2SecretGameOver, stopDay2 } from './Day 2/Day2.js';
 
 // +++++++++++++++++ Game State ++++++++++++++++++++
 let CV;
@@ -24,6 +25,7 @@ const gameState = {
     day1End: false,
     day3End: false
 };
+const gameState = { currentDay: 1, day1End: false, day2End: false };
 
 // +++++++++++++++++ Input System ++++++++++++++++++++
 let iptManager;
@@ -35,6 +37,10 @@ function resetGame() {
     CV = new Canvas(GAME_CONFIG.CANVAS_ID, GAME_CONFIG.CANVAS_SCALE);
     gameActive = false;
     gameTick = 0;
+    gameState.currentDay = 1;
+    gameState.day1End = false;
+    gameState.day2End = false;
+    stopDay2();
 
     if (gameRefresher) clearInterval(gameRefresher);
     gameRefresher = null;
@@ -70,6 +76,34 @@ function refreshGame() {
         gameActive = false;
         if (gameRefresher) clearInterval(gameRefresher);
         gameRefresher = null;
+    if (gameState.currentDay === 1) {
+        updateDay1();
+        drawDay1();
+
+        if (isDay1Complete()) {
+            startDay2({
+                canvas: CV,
+                player: PL,
+                inputManager: iptManager,
+                actionMap: actMapper,
+                onDayComplete: () => { gameState.day2End = true; }
+            });
+            gameState.currentDay = 2;
+        }
+    } else if (gameState.currentDay === 2) {
+        updateDay2();
+        drawDay2();
+
+        if (isDay2SecretGameOver()) {
+            gameActive = false;
+            if (gameRefresher) clearInterval(gameRefresher);
+            gameRefresher = null;
+        } else if (isDay2Complete()) {
+            gameState.currentDay = 3;
+            gameActive = false;
+            if (gameRefresher) clearInterval(gameRefresher);
+            gameRefresher = null;
+        }
     }
 
     // Update game tick
