@@ -13,6 +13,18 @@ let input;
 let actMap;
 let onComplete;
 
+//day 1 background music files
+const audioPaths = {
+    first: 'assets/audio/Day1_Audio1.mp3',
+    second: 'assets/audio/Day1_Audio2.mp3'
+};
+
+//audio objects used only while day 1 is active
+const music = {
+    first: null,
+    second: null
+};
+
 //order of day 1 map stages and task interactions
 const stageOrder = ['sweep', 'study', 'cook', 'bed'];
 
@@ -86,6 +98,7 @@ export function startDay1({ canvas, player, inputManager, actionMap, onDayComple
     state.eWasDown = false;
 
     buildTaskAssets();
+    startDay1Music();
     CV.setBackground(stageImages.sweep);
     centerPlayer();
 }
@@ -204,6 +217,46 @@ function makeImage(path) {
     const image = new Image();
     image.src = path;
     return image;
+}
+
+/**
+ *starts day 1 music and chains the second track after the first
+ *@returns {void}
+ */
+function startDay1Music() {
+    stopDay1Music();
+
+    music.first = new Audio(audioPaths.first);
+    music.second = new Audio(audioPaths.second);
+
+    music.first.onended = () => {
+        if (state.done || !music.second) return;
+        music.second.currentTime = 0;
+        music.second.play().catch(() => {});
+    };
+
+    music.first.currentTime = 0;
+    music.first.play().catch(() => {});
+}
+
+/**
+ *stops day 1 music right away
+ *@returns {void}
+ */
+function stopDay1Music() {
+    if (music.first) {
+        music.first.pause();
+        music.first.currentTime = 0;
+        music.first.onended = null;
+    }
+
+    if (music.second) {
+        music.second.pause();
+        music.second.currentTime = 0;
+    }
+
+    music.first = null;
+    music.second = null;
 }
 
 /**
@@ -492,6 +545,7 @@ function updateFade() {
     if (state.fadeAlpha < 1) return;
 
     state.done = true;
+    stopDay1Music();
     if (onComplete) onComplete();
 }
 
