@@ -85,7 +85,7 @@ function refreshGame() {
                 player: PL,
                 inputManager: iptManager,
                 actionMap: actMapper
-            })
+            });
             gameState.currentDay = 3;
             gameActive = false;
             if (gameRefresher) clearInterval(gameRefresher);

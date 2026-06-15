@@ -384,7 +384,6 @@ function updateMapInteraction() {
 function updateAuxMapInteraction() {
     const eDown = actMap.isActive('interact');
 
-    console.log(getAuxStage());
     if (!canInteractAux() || !eDown) return;
     startAuxTask(getAuxStage());
 }
@@ -410,15 +409,8 @@ function canInteract() {
  */
 function canInteractAux() {
     const hitbox = GAME_CONFIG.AUX_HITBOXES.day2[getAuxStage()];
-    if (!hitbox) { console.log("no hitbox"); return false; }
+    if (!hitbox) return false;
 
-    // const state = PL.x < hitbox.x + hitbox.w &&
-    //     PL.x + PL.w > hitbox.x &&
-    //     PL.y < hitbox.y + hitbox.h &&
-    //     PL.y + PL.h > hitbox.y;
-
-    // console.log(state);
-    // return state;
     return PL.x < hitbox.x + hitbox.w &&
         PL.x + PL.w > hitbox.x &&
         PL.y < hitbox.y + hitbox.h &&
@@ -540,7 +532,7 @@ function updateTask() {
  * @returns {void}
  */
 function updateAuxTask() {
-    if (state.currentTask === 'phone') updatePhone();
+    if (state.currentTask === 'note') updatePhone();
 }
 
 /**
