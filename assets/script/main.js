@@ -9,6 +9,7 @@ import { ActionMap } from './Classes/Player/ActionMap.js';
 import { Player } from './Classes/Player/Player.js';
 import { Canvas } from './Classes/GameScreen/Canvas.js';
 import { GAME_CONFIG } from './config.js';
+import { startDay1, updateDay1, drawDay1, isDay1Complete } from './Day 1/Day1.js';
 
 // +++++++++++++++++ Game State ++++++++++++++++++++
 let CV;
@@ -59,17 +60,14 @@ function startGame() {
 
 /** Main game update loop */
 function refreshGame() {
-    // Update player
-    PL.update();
+    updateDay1();
+    drawDay1();
 
-    // Update canvas if player moved
-    if (PL.oldX !== PL.x || PL.oldY !== PL.y) {
-        CV.update(PL);
+    if (isDay1Complete()) {
+        gameActive = false;
+        if (gameRefresher) clearInterval(gameRefresher);
+        gameRefresher = null;
     }
-
-    // TODO: Add game logic
-
-    CV.clearAndDraw();
 
     // Update game tick
     gameTick++;
@@ -99,6 +97,7 @@ function buildGame() {
 
     PL = new Player({
         path: characterConfig.spriteSrc,
+        sprites: characterConfig.sprites,
         cv: CV,
         actMap: actMapper,
         width: characterConfig.width,
@@ -106,7 +105,20 @@ function buildGame() {
         kp: characterConfig.speed
     });
 
+    PL.x = Math.round((CV.WIDTH - PL.w) / 2);
+    PL.y = Math.round((CV.HEIGHT - PL.h) / 2);
+
     CV.addEntity(PL);
+    startDay1({
+        canvas: CV,
+        player: PL,
+        inputManager: iptManager,
+        actionMap: actMapper,
+        onDayComplete: () => {
+            gameState.day1End = true;
+            console.log('Day 1 ended. Load Day 2 here.');
+        }
+    });
     CV.clearAndDraw();
 
     // TODO: Add entity spawning logic 🫠

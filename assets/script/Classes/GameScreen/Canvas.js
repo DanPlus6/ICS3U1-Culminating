@@ -29,6 +29,14 @@ export class Canvas {
 
         /** spatial grid to store active entities on the page */
         this.spatGrid = new SpatialGrid(cellSize);
+
+        this.background = null;
+    }
+
+    /** Set the current full-canvas background image. */
+    setBackground(path) {
+        this.background = new Image();
+        this.background.src = path;
     }
 
     /**
@@ -68,6 +76,9 @@ export class Canvas {
     /** draws provided entities onto screen */
     clearAndDraw() {
         this.clearCanvas();
+        if (this.background) {
+            this.BRUSH.drawImage(this.background, 0, 0, this.WIDTH, this.HEIGHT);
+        }
         for (const cell of this.spatGrid.grid.values()) {
             for (const entity of cell) {
                 this.BRUSH.drawImage(entity.sprite, entity.x, entity.y, entity.w, entity.h);

@@ -1,52 +1,55 @@
 /**
  * Day 1 - Study Task
- * Hold UP arrow to write, release and repeat for a random number of times (3-5)
- * Image alternates between two writing frames while held, returns to idle on release
+ * Hold UP arrow to write.
+ * Shows idle pen image, then alternates between two writing images while held.
+ * Random number of times 3-5.
  */
 
 'use strict';
 
 const CANVAS = document.getElementById('game-canvas');
-CANVAS.width = CANVAS.clientWidth;
+CANVAS.width  = CANVAS.clientWidth;
 CANVAS.height = CANVAS.clientHeight;
-const BRUSH = CANVAS.getContext('2d');
+const BRUSH   = CANVAS.getContext('2d');
 
 // ── Task state ────────────────────────────────────────────────
 let totalWrites     = 0;
 let writesCompleted = 0;
 let taskActive      = false;
-
-// hold detection
-let holdCounted  = false;    // has this press already been counted
-let upHeld       = false;
-
-// animation
-let writeFrame  = 'A';      // 'A' or 'B', flips while held
-let animTick    = 0;
-const ANIM_INTERVAL = 8;    // ticks between frame flips (~160ms at 50fps)
+let holdCounted     = false;
+let upHeld          = false;
+let writeFrame      = 'A';
+let animTick        = 0;
+const ANIM_INTERVAL = 8;
 
 // ── Images ───────────────────────────────────────────────────
-// swap src paths for real sprites when ready
-const imgIdle   = new Image();
-imgIdle.src     = 'assets/img/UI/study_idle.png';    // pen stationary
 
-const imgWriteA = new Image();
-imgWriteA.src   = 'assets/img/UI/study_write_a.png'; // writing frame 1
+// study images (back layer)
+const studyIdle   = new Image();
+studyIdle.src     = '../../img/Day1Img/1_CloseStudy1.png';   // pen stationary
 
-const imgWriteB = new Image();
-imgWriteB.src   = 'assets/img/UI/study_write_b.png'; // writing frame 2
+const studyWriteA = new Image();
+studyWriteA.src   = '../../img/Day1Img/1_CloseStudy1.png';   // writing frame 1 (swap if you have a different one)
 
-const PROMPT_SIZE = 128;
+const studyWriteB = new Image();
+studyWriteB.src   = '../../img/Day1Img/1_CloseStudy2.png';   // writing frame 2
 
-// ── Keys currently held ──────────────────────────────────────
+// arrow on top
+const arrowUp = new Image();
+arrowUp.src   = '../../img/Arrows/DownArrow.png';
+
+const STUDY_SIZE = 600;
+const ARROW_SIZE = 200;
+
+// ── Keys ─────────────────────────────────────────────────────
 const keysDown = {};
-window.addEventListener('keydown', e => keysDown[e.key] = true);
-window.addEventListener('keyup',   e => keysDown[e.key] = false);
+window.addEventListener('keydown', e => { keysDown[e.key] = true;  e.preventDefault(); });
+window.addEventListener('keyup',   e => { keysDown[e.key] = false; });
 
 // ── Core functions ───────────────────────────────────────────
 
 function startStudyTask() {
-    totalWrites     = Math.floor(Math.random() * 3) + 3;  // 3, 4, or 5
+    totalWrites     = Math.floor(Math.random() * 6) + 10;  // 3-5
     writesCompleted = 0;
     holdCounted     = false;
     upHeld          = false;
@@ -58,26 +61,30 @@ function startStudyTask() {
 function updateStudyTask() {
     if (!taskActive) return;
 
-    const upDown = !!keysDown['ArrowUp'];
+    const upDown = !!keysDown['ArrowDown'];
 
     if (upDown) {
         upHeld = true;
         animTick++;
 
-        // count one write on the very first tick of a new hold
+        // count one write on the first tick of each new hold
         if (!holdCounted) {
             holdCounted = true;
-            registerWrite();
-            if (!taskActive) return;  // task may have just finished
+            writesCompleted++;
+            if (writesCompleted >= totalWrites) {
+                taskActive = false;
+                onStudyComplete();
+                return;
+            }
         }
 
-        // alternate animation frames while held
+        // alternate frames while held
         if (animTick >= ANIM_INTERVAL) {
             animTick   = 0;
             writeFrame = writeFrame === 'A' ? 'B' : 'A';
         }
     } else {
-        // key released — reset back to idle
+        // released — reset back to idle
         upHeld      = false;
         holdCounted = false;
         animTick    = 0;
@@ -85,49 +92,32 @@ function updateStudyTask() {
     }
 }
 
-function registerWrite() {
-    writesCompleted++;
-    if (writesCompleted >= totalWrites) {
-        taskActive = false;
-        onStudyComplete();
-    }
-}
-
 function drawStudyTask() {
     if (!taskActive) return;
 
-    const cx   = CANVAS.width  / 2;
-    const cy   = CANVAS.height / 2;
-    const half = PROMPT_SIZE   / 2;
+    const cx = CANVAS.width  / 2;
+    const cy = CANVAS.height / 2;
 
-    // pick correct image
-    let img;
+    // study image behind
+    const studyImg = !upHeld ? studyIdle
+                   : writeFrame === 'A' ? studyWriteA : studyWriteB;
+    BRUSH.drawImage(studyImg, cx - STUDY_SIZE / 2, cy - STUDY_SIZE / 2, STUDY_SIZE, STUDY_SIZE);
+
+    // up arrow on top — only show when not yet held (hint to player)
     if (!upHeld) {
-        img = imgIdle;
-    } else {
-        img = writeFrame === 'A' ? imgWriteA : imgWriteB;
-    }
-
-    BRUSH.drawImage(img, cx - half, cy - half, PROMPT_SIZE, PROMPT_SIZE);
-
-    // hint text when idle
-    if (!upHeld) {
-        BRUSH.font      = 'bold 18px sans-serif';
-        BRUSH.fillStyle = 'white';
-        BRUSH.textAlign = 'center';
-        BRUSH.fillText('[↑] Hold to write', cx, cy - half - 14);
+        BRUSH.drawImage(arrowUp, cx - ARROW_SIZE / 2, cy - ARROW_SIZE / 2, ARROW_SIZE, ARROW_SIZE);
     }
 
     // progress counter
     BRUSH.font      = 'bold 22px sans-serif';
     BRUSH.fillStyle = 'white';
     BRUSH.textAlign = 'center';
-    BRUSH.fillText(`${writesCompleted} / ${totalWrites}`, cx, cy + half + 32);
+    BRUSH.fillText(`${writesCompleted} / ${totalWrites}`, cx, cy + STUDY_SIZE / 2 + 36);
 }
 
 function onStudyComplete() {
     console.log('Study done!');
-    // TODO: call startCookTask() here when chaining tasks
+    // TODO: chain to next task
 }
 
 // ── Game loop ────────────────────────────────────────────────

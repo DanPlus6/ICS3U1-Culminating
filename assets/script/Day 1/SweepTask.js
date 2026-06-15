@@ -1,50 +1,61 @@
 /**
  * Day 1 - Sweep Task
- * Tap LEFT arrow then RIGHT arrow, alternating, for a random number of times (5-20)
+ * Draws the broom image behind, arrow image on top, both centred.
+ * Tap LEFT arrow (broom left + left arrow) then RIGHT arrow (broom right + right arrow), alternating.
+ * Random number of times 5-20.
  */
 
 'use strict';
 
 const CANVAS = document.getElementById('game-canvas');
-CANVAS.width = CANVAS.clientWidth;
+CANVAS.width  = CANVAS.clientWidth;
 CANVAS.height = CANVAS.clientHeight;
-const BRUSH = CANVAS.getContext('2d');
+const BRUSH   = CANVAS.getContext('2d');
 
 // ── Task state ────────────────────────────────────────────────
-let totalSweeps = 0;
+let totalSweeps     = 0;
 let sweepsCompleted = 0;
-let expectedKey = 'ArrowLeft';   // always starts on left
-let taskActive = false;
+let expectedKey     = 'ArrowLeft';
+let taskActive      = false;
 
-// one-shot key guards (so holding doesn't spam)
+// one-shot key guards
 let leftWasDown  = false;
 let rightWasDown = false;
 
 // ── Images ───────────────────────────────────────────────────
-// placeholder 1 = left arrow prompt, placeholder 2 = right arrow prompt
-// swap these src paths for your real arrow images later
-const imgLeft  = new Image();
-imgLeft.src    = 'assets/img/UI/sweep_left.png';
 
-const imgRight = new Image();
-imgRight.src   = 'assets/img/UI/sweep_right.png';
+// broom images (back layer)
+const broomLeft  = new Image();
+broomLeft.src    = '../../img/Day1Img/1_CloseSweep2.png';
 
-const PROMPT_SIZE = 128;
+const broomRight = new Image();
+broomRight.src   = '../../img/Day1Img/1_CloseSweep1.png';
 
-// ── Keys currently held ──────────────────────────────────────
+// arrow images (front layer)
+const arrowLeft  = new Image();
+arrowLeft.src    = '../../img/Arrows/LeftArrow.png';
+
+const arrowRight = new Image();
+arrowRight.src   = '../../img/Arrows/RightArrow.png';
+
+// broom drawn bigger, arrow smaller on top
+const BROOM_SIZE = 600;
+const ARROW_SIZE = 500;
+
+// ── Keys ─────────────────────────────────────────────────────
 const keysDown = {};
-window.addEventListener('keydown', e => keysDown[e.key] = true);
-window.addEventListener('keyup',   e => keysDown[e.key] = false);
+window.addEventListener('keydown', e => { keysDown[e.key] = true;  e.preventDefault(); });
+window.addEventListener('keyup',   e => { keysDown[e.key] = false; });
 
 // ── Core functions ───────────────────────────────────────────
 
 function startSweepTask() {
-    totalSweeps      = Math.floor(Math.random() * 16) + 5;  // 5-20
-    sweepsCompleted  = 0;
-    expectedKey      = 'ArrowLeft';
-    leftWasDown      = false;
-    rightWasDown     = false;
-    taskActive       = true;
+    totalSweeps     = Math.floor(Math.random() * 16) + 5;  // 5-20
+    sweepsCompleted = 0;
+    expectedKey     = 'ArrowLeft';
+    leftWasDown     = false;
+    rightWasDown    = false;
+    taskActive      = true;
 }
 
 function updateSweepTask() {
@@ -77,23 +88,27 @@ function registerSweep() {
 function drawSweepTask() {
     if (!taskActive) return;
 
-    const cx   = CANVAS.width  / 2;
-    const cy   = CANVAS.height / 2;
-    const half = PROMPT_SIZE   / 2;
+    const cx = CANVAS.width  / 2;
+    const cy = CANVAS.height / 2;
 
-    const img = expectedKey === 'ArrowLeft' ? imgLeft : imgRight;
-    BRUSH.drawImage(img, cx - half, cy - half, PROMPT_SIZE, PROMPT_SIZE);
+    // broom behind — centred, larger
+    const broom = expectedKey === 'ArrowLeft' ? broomLeft : broomRight;
+    BRUSH.drawImage(broom, cx - BROOM_SIZE / 2, cy - BROOM_SIZE / 2, BROOM_SIZE, BROOM_SIZE);
 
-    // progress counter
+    // arrow on top — centred, smaller
+    const arrow = expectedKey === 'ArrowLeft' ? arrowLeft : arrowRight;
+    BRUSH.drawImage(arrow, cx - ARROW_SIZE / 2, cy - ARROW_SIZE / 2, ARROW_SIZE, ARROW_SIZE);
+
+    // progress counter below
     BRUSH.font      = 'bold 22px sans-serif';
     BRUSH.fillStyle = 'white';
     BRUSH.textAlign = 'center';
-    BRUSH.fillText(`${sweepsCompleted} / ${totalSweeps}`, cx, cy + half + 32);
+    BRUSH.fillText(`${sweepsCompleted} / ${totalSweeps}`, cx, cy + BROOM_SIZE / 2 + 36);
 }
 
 function onSweepComplete() {
     console.log('Sweep done!');
-    // TODO: call startStudyTask() here when chaining tasks
+    // TODO: chain to next task
 }
 
 // ── Game loop ────────────────────────────────────────────────

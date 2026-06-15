@@ -51,7 +51,7 @@ export class SpatialGrid {
 
 		// update grid only when the entity changed cells
 		if (oldKey !== newKey) {
-			this.remove({x: entity.oldX, y: entity.oldY, ...entity});
+			this.remove({...entity, x: entity.oldX, y: entity.oldY});
 			this.add(entity);
 		}
 	}
