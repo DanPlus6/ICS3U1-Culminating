@@ -1500,7 +1500,7 @@ function updateFade() {
     if (state.fadeAlpha < 1) return;
 
     state.done = true;
-    stopDay2Audio
+    stopDay2Audio();
     if (onComplete) onComplete();
 }
 
