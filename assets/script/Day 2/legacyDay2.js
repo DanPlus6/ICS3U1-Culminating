@@ -15,19 +15,22 @@ let onComplete;
 let CANVAS;
 let BRUSH;
 
-const stageOrder = ['blinds', 'phone', 'wires', 'closet'];
+const stageOrder = ['blinds', 'phone', 'door', 'closet', 'wires'];
 
 const stageImages = {
     blinds: 'assets/img/Day2Img/2_Blinds.png',
     phone: 'assets/img/Day2Img/2_Phone.png',
-    wires: 'assets/img/Day2Img/2_Uber.png',
-    closet: 'assets/img/Day2Img/2_Uber.png'
+    door: 'assets/img/Day2Img/2_Uber.png',
+    closet: 'assets/img/Day2Img/2_Closet.png',
+    wires: 'assets/img/Day2Img/2_Game.png'
 };
 
 const taskImages = {
     sticky1: 'assets/img/Day2Img/2_CloseSticky.png',
     sticky2: 'assets/img/Day2Img/2_SecretEnding.png',
     phone: 'assets/img/Day2Img/ian_png-removebg-preview.png',
+    uberJS: 'assets/img/Day2Img/2_CloseUber1',
+    door: 'assets/img/Day2Img/2_CloseUber2',
     closetBackground: 'assets/img/Day2Img/closetBG.png',
     closetLeftDoor: 'assets/img/Day2Img/closetLDoor.png',
     closetRightDoor: 'assets/img/Day2Img/closetRDoor.png',
@@ -152,8 +155,7 @@ let collided = false;
 //check if the game has been completed
 let wiresCompleted = false;
 
-//variables for the closet minigame
-//get the closet images
+//get the images
 const PHONE_IMAGE = document.createElement('img');
 const BACKGROUND_IMAGE = document.createElement('img');
 const LDOOR_IMAGE = document.createElement('img');
@@ -162,6 +164,8 @@ const JUMPSCARE_IMAGE = document.createElement('img');
 const STICKY1_IMAGE = document.createElement('img');
 const STICKY2_IMAGE = document.createElement('img');
 const SECRET_ENDING_IMAGE = document.createElement('img');
+const UBERJS_IMAGE = document.createElement('img');
+const UBER_IMAGE = document.createElement('img');
 
 //get the jumpscare sound
 const JUMPSCARE_AUDIO = new Audio('assets/audio/JumpscareScream.mp3');
@@ -295,6 +299,8 @@ function loadTaskAssets() {
     STICKY1_IMAGE.src = taskImages.sticky1;
     STICKY2_IMAGE.src = taskImages.sticky2;
     SECRET_ENDING_IMAGE.src = taskImages.secretEnding;
+    UBERJS_IMAGE.src = taskImages.uberJS;
+    UBER_IMAGE.src = taskImages.door;
 }
 
 /**
@@ -349,6 +355,13 @@ function updateMapInteraction() {
         return;
     }
 
+    if (getStage() === 'door'){
+        BRUSH.drawImage(UBERJS_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+        BRUSH.drawImage(UBER_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
+        completeTask();
+        return;
+    }
+
     startTask(getStage());
 }
 
@@ -386,8 +399,8 @@ function startTask(taskName) {
     state.taskFinishedAt = 0;
 
     if (taskName === 'phone') startCall();
-    if (taskName === 'wires') startWires();
     if (taskName === 'closet') startCloset();
+    if (taskName === 'wires') startWires();
 }
 
 /**
@@ -490,10 +503,6 @@ function updateWires() {
  * @returns {void}
  */
 function drawWires() {
-    BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301 * 1.4, CANVAS.height * 1.2);
-    BRUSH.font = '35px Arial';
-    BRUSH.fillStyle = 'black';
-    BRUSH.fillText('Use Mouse to Connect Wires', CANVAS.width / 3 + 25, 150);
     draw();
 }
 
@@ -1029,6 +1038,11 @@ function resetWires() {
     greenEndCollide = false;
     greenStartY = originalGreenStartY;
     greenStartX = startX;
+
+    BRUSH.drawImage(PHONE_IMAGE, -150, -25, 1301 * 1.4, CANVAS.height * 1.2);
+    BRUSH.font = '35px Arial';
+    BRUSH.fillStyle = 'black';
+    BRUSH.fillText('Use Mouse to Connect Wires', CANVAS.width / 3 + 25, 150);
 }
 
 /**

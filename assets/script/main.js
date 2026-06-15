@@ -25,7 +25,6 @@ const gameState = {
     day1End: false,
     day3End: false
 };
-const gameState = { currentDay: 1, day1End: false, day2End: false };
 
 // +++++++++++++++++ Input System ++++++++++++++++++++
 let iptManager;
