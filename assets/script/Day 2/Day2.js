@@ -484,7 +484,7 @@ function startAuxTask(taskName) {
 
 /**
  * moves from the finished task to the map containing the next task
- * @returns {void}
+ * @returns if all tasks are completed to transition to next day
  */
 function completeTask() {
     removeTaskListeners();
@@ -1291,7 +1291,6 @@ function checkMouseUp(mouseUpEvent){
 
 /**
  * resets the wire task positions after a wrong connection
- * @returns {void}
  */
 function resetWires() {
     linesAmount = 0;
@@ -1492,11 +1491,12 @@ function startDoor(){
 
 /**
  * updates the end of day fade
- * @returns {void}
+ * @returns if the fade has started
  */
 function updateFade() {
     state.fadeAlpha = Math.min(1, state.fadeAlpha + 0.02);
 
+    //check if the fade has started
     if (state.fadeAlpha < 1) return;
 
     state.done = true;
@@ -1506,7 +1506,6 @@ function updateFade() {
 
 /**
  * draws the interact prompt at the bottom of the screen
- * @returns {void}
  */
 function drawInteractPrompt() {
     const text = 'Interact [E]';
@@ -1536,7 +1535,6 @@ function drawInteractPrompt() {
 
 /**
  * draws the restart prompt for ending screens
- * @returns {void}
  */
 function drawRestartPrompt() {
     const text = 'Press [R] to restart';
@@ -1566,10 +1564,11 @@ function drawRestartPrompt() {
 
 /**
  * draws the current shared hitbox for manual tuning
- * @returns {void}
+ * @returns if there is no hitbox
  */
 function drawHitbox() {
     const hitbox = GAME_CONFIG.HITBOXES.day2[getStage()];
+    //check if there is no hitbox
     if (!hitbox) return;
 
     BRUSH.save();
@@ -1581,10 +1580,11 @@ function drawHitbox() {
 
 /**
  * draws the current shared auxiliary hitbox for manual tuning
- * @returns {void}
+ * @returns if there is no auxiliary hitbox
  */
 function drawAuxHitbox() {
     const hitbox = GAME_CONFIG.AUX_HITBOXES.day2[getAuxStage()];
+    //check if there is no auxiliary hitbox
     if (!hitbox) return;
 
     BRUSH.save();
@@ -1596,7 +1596,6 @@ function drawAuxHitbox() {
 
 /**
  * draws the fade to black overlay
- * @returns {void}
  */
 function drawFade() {
     BRUSH.save();
