@@ -704,7 +704,7 @@ function drawDoor() {
     BRUSH.drawImage(UBER_IMAGE, 0, 0, CANVAS.width, CANVAS.height);
     BRUSH.font = '40px Garamond';
     BRUSH.fillStyle = 'white';
-    BRUSH.fillText('Click.', midButtonX - 50, 700);
+    BRUSH.fillText('Click to check peephole', midButtonX - 50, 700);
 }
 
 /**
