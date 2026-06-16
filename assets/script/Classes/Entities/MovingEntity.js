@@ -1,3 +1,6 @@
+/**
+ * By: David Fu
+ */
 'use strict';
 
 import { Canvas } from "../GameScreen/Canvas.js";

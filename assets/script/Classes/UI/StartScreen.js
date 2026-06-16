@@ -1,3 +1,6 @@
+/**
+ * By : David Fu
+ */
 'use strict';
 
 export class StartScreen {
@@ -58,6 +61,7 @@ export class StartScreen {
         }
     }
 
+    /** Inject css for start screen */
     #injectStyles() {
         if (document.getElementById('start-screen-styles')) return;
 

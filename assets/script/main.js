@@ -1,5 +1,5 @@
 /**
- * By: David Fu, Ian Choy, Marcus Kim
+ * By: David Fu
  */
 'use strict';
 

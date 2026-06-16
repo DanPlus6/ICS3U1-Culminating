@@ -1,3 +1,6 @@
+/**
+ * By: David Fu
+ */
 'use strict';
 
 import { MakeConst } from "../../functions/MakeConst.js";

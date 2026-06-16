@@ -1,3 +1,6 @@
+/**
+ * By: David Fu
+ */
 'use strict';
 
 import { MovingEntity } from '../Entities/MovingEntity.js';
