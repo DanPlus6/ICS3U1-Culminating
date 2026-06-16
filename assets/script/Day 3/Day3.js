@@ -3,7 +3,7 @@
  */
 'use strict';
 
-import { GAME_CONFIG } from '../config.js';
+import { GAME_CONFIG, getHitbox } from '../config.js';
 
 // +++++++++++++++++ Game Essentials ++++++++++++++++++++
 let CV;
@@ -321,7 +321,7 @@ function stopDay3Audio() {
 }
 
 /**
- * Callback to stop and resets the ending audio tracks
+ * Callback to stop and reset the ending audio tracks
  */
 export function stopDay3() {
     for (const audio of [dayAudio.end, dayAudio.endIdle]) {
@@ -405,7 +405,7 @@ function updateMapInteraction() {
  * @returns {boolean} true if the player is within interact range
  */
 function canInteract() {
-    const hitbox = GAME_CONFIG.HITBOXES.day3[getHitboxName()];
+    const hitbox = getHitbox('day3', getHitboxName());
     if (!hitbox) return false;
 
     // AABB overlap check between player and hitbox
@@ -454,8 +454,7 @@ function startTask(taskName) {
 }
 
 /**
- * Marks the current task as complete, advances the stage, and either begins
- * the end-of-day fade or transitions the map to the next stage.
+ * Marks current task as complete and advances stage 
  */
 function completeTask() {
     state.currentTask = null;
@@ -580,7 +579,7 @@ function resetBoardTask() {
 }
 
 /**
- * Create board data object with the given transform and target position.
+ * Create board data object with the given transform and target position
  * @param {number} x initial x position
  * @param {number} y initial y position
  * @param {number} w board width
@@ -1046,7 +1045,7 @@ function drawPromptText(text) {
  * Draw a lime-green outline around current stage's hitbox for debugging
  */
 function drawHitbox() {
-    const hitbox = GAME_CONFIG.HITBOXES.day3[getHitboxName()];
+    const hitbox = getHitbox('day3', getHitboxName());
     if (!hitbox) return;
 
     CV.BRUSH.save();
