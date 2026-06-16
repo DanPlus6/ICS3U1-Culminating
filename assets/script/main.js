@@ -172,6 +172,7 @@ function startDay3Sequence() {
 function addBaseListeners() {
     // Restart with R key
     window.addEventListener('keydown', (e) => {
+        // check if restart key is pressed to restart game
         if (e.key === 'r' || e.key === 'R') {
             if (!screenTransitioning) showStartScreen();
         }
