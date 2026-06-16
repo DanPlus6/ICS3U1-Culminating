@@ -41,7 +41,9 @@ const audioAssets = {
     waterDrop: 'assets/audio/Day3WaterDrop.mp3',
     knocking: 'assets/audio/KnockingSFX.mp3',
     closet: 'assets/audio/Day3Closet.mp3',
-    jumpscare: 'assets/audio/JumpscareScream.mp3'
+    jumpscare: 'assets/audio/JumpscareScream.mp3',
+    end: 'assets/audio/End.mp3',
+    endIdle: 'assets/audio/EndIdle.mp3'
 };
 
 // +++++++++++++++++ Day State ++++++++++++++++++++
@@ -85,7 +87,9 @@ const dayAudio = {
     waterDrop: null,
     knocking: null,
     // time since last ambient sound was played
-    waterDropTimerMs: 0 
+    waterDropTimerMs: 0,
+    end: null,
+    endIdle: null
 };
 
 // +++++++++++++++++ Day Mgmt Essentials ++++++++++++++++++++
@@ -209,6 +213,13 @@ function buildTaskAssets() {
     dayAudio.knocking = new Audio(audioAssets.knocking);
     dayAudio.knocking.volume = 1;
 
+    // set up ending tracks
+    dayAudio.end = new Audio(audioAssets.end);
+    dayAudio.end.volume = 1;
+    dayAudio.endIdle = new Audio(audioAssets.endIdle);
+    dayAudio.endIdle.loop = true;
+    dayAudio.endIdle.volume = 1;
+
     // sticky note task only needs a single close-up image
     task.sticky = {
         image: makeImage(taskAssets.stickyClose)
@@ -303,6 +314,17 @@ function updateDay3Audio() {
 function stopDay3Audio() {
     // stop each track and rewind so it can be replayed cleanly on restart
     for (const audio of [dayAudio.ambience, dayAudio.waterDrop, dayAudio.knocking]) {
+        if (!audio) continue;
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
+
+/**
+ * Callback to stop and resets the ending audio tracks
+ */
+export function stopDay3() {
+    for (const audio of [dayAudio.end, dayAudio.endIdle]) {
         if (!audio) continue;
         audio.pause();
         audio.currentTime = 0;
@@ -949,6 +971,15 @@ function updateFade() {
     state.done = true;
     stopDay3Audio();
     removeMouseListeners();
+
+    // play ending tracks
+    dayAudio.end.currentTime = 0;
+    dayAudio.end.play().catch(() => {});
+    dayAudio.end.addEventListener('ended', () => {
+        dayAudio.endIdle.currentTime = 0;
+        dayAudio.endIdle.play().catch(() => {});
+    }, { once: true });
+
     if (onComplete) onComplete();
 }
 
