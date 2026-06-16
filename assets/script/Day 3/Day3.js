@@ -132,10 +132,10 @@ export function updateDay3() {
     updateDay3Audio();
 
     // check if in task or fade mode to perform updates
-    if (state.mode === 'task') {
+    if (state.mode == 'task') {
         updateTask();
         return;
-    } else if (state.mode === 'fade') {
+    } else if (state.mode == 'fade') {
         updateFade();
         return;
     }
@@ -154,14 +154,14 @@ export function updateDay3() {
  */
 export function drawDay3() {
     // draw task view fullscreen, skip map rendering
-    if (state.mode === 'task') {
+    if (state.mode == 'task') {
         CV.clearCanvas();
         drawTask();
         return;
     }
 
     // draw ending screen fullscreen once fade is complete
-    if (state.mode === 'ending') {
+    if (state.mode == 'ending') {
         CV.clearCanvas();
         drawEnding();
         return;
@@ -180,7 +180,7 @@ export function drawDay3() {
     }
 
     // overlay the fade-to-black while transitioning between stages
-    if (state.mode === 'fade') {
+    if (state.mode == 'fade') {
         drawFade();
     }
 }
@@ -327,7 +327,7 @@ function installMouseListeners() {
     listeners.mouseDown = () => {
         mouse.down = true;
         // only start a board drag while the board task is active
-        if (state.mode === 'task' && state.currentTask === 'board') {
+        if (state.mode == 'task' && state.currentTask == 'board') {
             startBoardDrag();
         }
     };
@@ -335,7 +335,7 @@ function installMouseListeners() {
     listeners.mouseUp = () => {
         mouse.down = false;
         // only resolve a board drag while the board task is active
-        if (state.mode === 'task' && state.currentTask === 'board') {
+        if (state.mode == 'task' && state.currentTask == 'board') {
             stopBoardDrag();
         }
     };
@@ -407,8 +407,8 @@ function getStage() {
  */
 function getHitboxName() {
     const stage = getStage();
-    if (stage === 'sticky') return 'note2';
-    if (stage === 'board') return 'blinds';
+    if (stage == 'sticky') return 'note2';
+    if (stage == 'board') return 'blinds';
     return 'closet';
 }
 
@@ -424,9 +424,9 @@ function startTask(taskName) {
     state.eWasDown = true; // prevent the same E press from immediately completing the task
 
     // only board and closet tasks need initialization
-    if (taskName === 'board') {
+    if (taskName == 'board') {
         resetBoardTask();
-    } else if (taskName === 'closet') {
+    } else if (taskName == 'closet') {
         resetClosetTask();
     }
 }
@@ -468,10 +468,10 @@ function placePlayerNearBed() {
  */
 function placePlayerForStage(stage) {
     // check task to place player after completion
-    if (stage === 'board') {
+    if (stage == 'board') {
         placePlayer(900, 280);
         return;
-    } else if (stage === 'closet') {
+    } else if (stage == 'closet') {
         placePlayer(1450, 480);
         return;
     }
@@ -500,18 +500,18 @@ function placePlayer(x, y) {
  * Call update callback to task handler of current task
  */
 function updateTask() {
-    if (state.currentTask === 'sticky') updateSticky();
-    if (state.currentTask === 'board') updateBoard();
-    if (state.currentTask === 'closet') updateCloset();
+    if (state.currentTask == 'sticky') updateSticky();
+    if (state.currentTask == 'board') updateBoard();
+    if (state.currentTask == 'closet') updateCloset();
 }
 
 /**
  * Call draw callback to task handler of current task
  */
 function drawTask() {
-    if (state.currentTask === 'sticky') drawSticky();
-    if (state.currentTask === 'board') drawBoard();
-    if (state.currentTask === 'closet') drawCloset();
+    if (state.currentTask == 'sticky') drawSticky();
+    if (state.currentTask == 'board') drawBoard();
+    if (state.currentTask == 'closet') drawCloset();
 }
 
 // +++++++++++++++++ Sticky Task ++++++++++++++++++++
