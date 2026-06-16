@@ -654,7 +654,7 @@ function pointInRect(x, y, rect) {
 }
 
 /**
- * Draws the board task: the background, all board pieces, and the placement progress prompt.
+ * Draws the board task: the background, all board pieces, and the placement progress prompt
  */
 function drawBoard() {
     CV.BRUSH.drawImage(task.board.background, 0, 0, CV.WIDTH, CV.HEIGHT);
@@ -668,7 +668,7 @@ function drawBoard() {
 }
 
 /**
- * Draws a single board piece rotated around its center, slightly transparent if placed.
+ * Draws a single board piece rotated around its center, slightly transparent if placed
  * @param {{ x: number, y: number, w: number, h: number, angle: number, placed: boolean }} board the board to draw
  */
 function drawBoardPiece(board) {
@@ -780,7 +780,7 @@ function updateClosetTyping() {
 }
 
 /**
- * Returns an object mapping each WASD key to whether it is currently held down.
+ * Returns an object mapping each WASD key to whether it is currently held down
  * @returns {{ W: boolean, A: boolean, S: boolean, D: boolean }}
  */
 function getWasdState() {
@@ -795,7 +795,7 @@ function getWasdState() {
 }
 
 /**
- * Returns a new array of WASD keys in a random order using a Fisher-Yates shuffle.
+ * Returns a new array of WASD keys in a random order using a Fisher-Yates shuffle
  * @returns {string[]} shuffled key press sequence
  */
 function shuffleKeys() {
@@ -812,7 +812,7 @@ function shuffleKeys() {
 
 /**
  * Draws the closet task. Shows the jumpscare image on failure,
- * otherwise draws the closet front with typing prompt and progress bars.
+ * otherwise draws the closet front with typing prompt and progress bars
  */
 function drawCloset() {
     const closet = task.closet;
@@ -830,7 +830,7 @@ function drawCloset() {
 }
 
 /**
- * Draws the centered typing prompt box showing the current expected key and upcoming sequence.
+ * Draws the centered typing prompt box showing the current expected key and upcoming sequence
  */
 function drawClosetTypingPrompt() {
     const closet = task.closet;
@@ -860,12 +860,12 @@ function drawClosetTypingPrompt() {
 
 /**
  * Draws the two progress bars: a gauge bar (time before door breaks open)
- * and a survival bar (total time held).
+ * and a survival bar (total time held)
  */
 function drawClosetBars() {
     const closet = task.closet;
 
-    // red gauge bar — depletes if the player stops pressing keys
+    // red gauge bar which depletes if the player stops pressing keys
     drawBar({
         x: (CV.WIDTH - 520) / 2,
         y: CV.HEIGHT - 120,
@@ -875,7 +875,7 @@ function drawClosetBars() {
         fill: 'rgba(220, 40, 40, 0.92)'
     });
 
-    // white survival bar — fills as the player holds on
+    // white survival bar which fills as the player holds on
     drawBar({
         x: (CV.WIDTH - 520) / 2,
         y: CV.HEIGHT - 78,
