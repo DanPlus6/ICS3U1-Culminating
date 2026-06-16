@@ -59,10 +59,12 @@ function startGame() {
 
 /** Main game update loop */
 function refreshGame() {
+    // run update/draw for the active day (1)
     if (gameState.currentDay === 1) {
         updateDay1();
         drawDay1();
 
+        // advance to day 2 once day 1 tasks are done
         if (isDay1Complete()) {
             startDay2({
                 canvas: CV,
@@ -73,15 +75,16 @@ function refreshGame() {
             });
             gameState.currentDay = 2;
         }
-    } else if (gameState.currentDay === 2) {
+    } else if (gameState.currentDay === 2) { // run update/draw for the active day (2)
         updateDay2();
         drawDay2();
 
+        // trigger secret game over if secret condition is met
         if (isDay2SecretGameOver()) {
             gameActive = false;
             if (gameRefresher) clearInterval(gameRefresher);
             gameRefresher = null;
-        } else if (isDay2Complete()) {
+        } else if (isDay2Complete()) { // advance to day 2 once day 1 tasks are done
             startDay3({
                 canvas: CV,
                 player: PL,
@@ -92,10 +95,11 @@ function refreshGame() {
             gameState.currentDay = 3;
             gameActive = true;
         }
-    } else if (gameState.currentDay === 3) {
+    } else if (gameState.currentDay === 3) { // run update/draw for the active day (3)
         updateDay3();
         drawDay3();
 
+        // end game loop once day 3 objectives are met
         if (isDay3Complete()) {
             gameActive = false;
             if (gameRefresher) clearInterval(gameRefresher);
@@ -156,6 +160,7 @@ function buildGame() {
     CV.clearAndDraw();
 }
 
+/** Callback to directly start day 3, skipping previous days and states */
 function startDay3Sequence() {
     gameState.activeDay = 3;
     startDay3({

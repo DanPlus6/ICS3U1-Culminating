@@ -401,11 +401,12 @@ function updateMapInteraction() {
 }
 
 /**
- * Check whether player's bounding box overlaps the current stage's hitbox.
+ * Check whether player's bounding box overlaps the current stage's hitbox
  * @returns {boolean} true if the player is within interact range
  */
 function canInteract() {
     const hitbox = getHitbox('day3', getHitboxName());
+    // skip drawing if edge case where hitbox undefined
     if (!hitbox) return false;
 
     // AABB overlap check between player and hitbox
@@ -429,6 +430,8 @@ function getStage() {
  */
 function getHitboxName() {
     const stage = getStage();
+
+    // map each stage to its corresponding hitbox config key
     if (stage == 'sticky') return 'note2';
     if (stage == 'board') return 'blinds';
     return 'closet';
@@ -629,6 +632,7 @@ function startBoardDrag() {
     // iterate in reverse so the topmost (last-drawn) board is picked up first
     for (let i = task.board.boards.length - 1; i >= 0; i--) {
         const board = task.board.boards[i];
+        // skip boards already placed or not under the cursor
         if (board.placed || !pointInRect(mouse.x, mouse.y, board)) continue;
 
         task.board.draggingIndex = i;
@@ -643,6 +647,7 @@ function startBoardDrag() {
  */
 function stopBoardDrag() {
     const index = task.board.draggingIndex;
+    // nothing to release if no board is being dragged
     if (index < 0) return;
 
     const board = task.board.boards[index];
@@ -737,6 +742,7 @@ function updateCloset() {
     // wait a second after finishing or failing before advancing
     if (closet.failed || closet.finished) {
         closet.endDelay += GAME_CONFIG.REFRESH_INTERVAL_MS;
+        // advance after a 1 second delay following pass or fail
         if (closet.endDelay >= 1000) {
             completeTask();
         }
@@ -751,6 +757,7 @@ function updateCloset() {
     // play a random closet sound every 3 seconds with 50% probability
     if (closet.closetAudioTimerMs >= 3000) {
         closet.closetAudioTimerMs = 0;
+        // 50% chance to play the closet creak sound
         if (Math.random() < 0.5) {
             playSound(closet.closetAudio);
         }
@@ -1046,6 +1053,7 @@ function drawPromptText(text) {
  */
 function drawHitbox() {
     const hitbox = getHitbox('day3', getHitboxName());
+    // catch edge case where hitbox undefined
     if (!hitbox) return;
 
     CV.BRUSH.save();
