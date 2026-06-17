@@ -60,7 +60,7 @@ function startGame() {
 /** Main game update loop */
 function refreshGame() {
     // run update/draw for the active day (1)
-    if (gameState.currentDay === 1) {
+    if (gameState.currentDay == 1) {
         updateDay1();
         drawDay1();
 
@@ -75,7 +75,7 @@ function refreshGame() {
             });
             gameState.currentDay = 2;
         }
-    } else if (gameState.currentDay === 2) { // run update/draw for the active day (2)
+    } else if (gameState.currentDay == 2) { // run update/draw for the active day (2)
         updateDay2();
         drawDay2();
 
@@ -95,7 +95,7 @@ function refreshGame() {
             gameState.currentDay = 3;
             gameActive = true;
         }
-    } else if (gameState.currentDay === 3) { // run update/draw for the active day (3)
+    } else if (gameState.currentDay == 3) { // run update/draw for the active day (3)
         updateDay3();
         drawDay3();
 
@@ -178,7 +178,7 @@ function addBaseListeners() {
     // Restart with R key
     window.addEventListener('keydown', (e) => {
         // check if restart key is pressed to restart game
-        if (e.key === 'r' || e.key === 'R') {
+        if (e.key == 'r' || e.key == 'R') {
             if (!screenTransitioning) showStartScreen();
         }
     });

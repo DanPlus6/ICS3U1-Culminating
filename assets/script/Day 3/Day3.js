@@ -5,6 +5,7 @@
 
 import { GAME_CONFIG, getHitbox } from '../config.js';
 
+// ------------------- BEGIN CONFIG -------------------
 // +++++++++++++++++ Game Essentials ++++++++++++++++++++
 let CV;
 let PL;
@@ -49,10 +50,10 @@ const audioAssets = {
 // +++++++++++++++++ Day State ++++++++++++++++++++
 /** state of current stage, mode, and day-level flags */
 const state = {
-    stageIndex: 0,
-    // current stage mode: map, task,  fade, ending
+    stageIdx: 0,
+    /** modes: map, task,  fade, ending */
     mode: 'map',
-    currentTask: null,
+    curTask: null,
     done: false,
     fadeAlpha: 0,
     eWasDown: false,
@@ -60,11 +61,7 @@ const state = {
 };
 
 /** mouse position and button state relative to the canvas */
-const mouse = {
-    x: 0,
-    y: 0,
-    down: false
-};
+const mouse = { x: 0, y: 0, down: false };
 
 // +++++++++++++++++ Task State ++++++++++++++++++++
 /** runtime state for tasks */
@@ -86,11 +83,26 @@ const dayAudio = {
     ambience: null,
     waterDrop: null,
     knocking: null,
-    // time since last ambient sound was played
+    /** time since last ambient sound was played */
     waterDropTimerMs: 0,
     end: null,
     endIdle: null
 };
+
+// // +++++++++++++++++ Audio Config ++++++++++++++++++++
+/** volume for day 3 ambience */
+const ambienceVol = 0.55;
+/** volume for water dripping sound */
+const waterVol = 0.8;
+/** volume for knocking volume */
+const knockVol = 1;
+/** volume for game end sound effect */
+const endVol = 1;
+/** volume for game ending ambience */
+const endingVol = 1;
+
+// ----------------------- END CONFIG -----------------------
+
 
 // +++++++++++++++++ Day Mgmt Essentials ++++++++++++++++++++
 
@@ -111,19 +123,19 @@ export function startDay3({ canvas, player, inputManager, actionMap, onDayComple
     onComplete = onDayComplete;
 
     // reset all day state
-    state.stageIndex = 0;
+    state.stageIdx = 0;
     state.mode = 'map';
-    state.currentTask = null;
+    state.curTask = null;
     state.done = false;
     state.fadeAlpha = 0;
     state.eWasDown = false;
     state.endDelay = 0;
 
-    buildTaskAssets();
-    startDay3Audio();
-    installMouseListeners();
+    build();
+    startAudio();
+    attachListeners();
     CV.setBackground(stageImages.sticky);
-    placePlayerNearBed();
+    tpBed();
 }
 
 /**
@@ -136,19 +148,14 @@ export function updateDay3() {
     updateDay3Audio();
 
     // check if in task or fade mode to perform updates
-    if (state.mode == 'task') {
-        updateTask();
-        return;
-    } else if (state.mode == 'fade') {
-        updateFade();
-        return;
-    }
+    if (state.mode == 'task') { updateTask(); return; }
+    else if (state.mode == 'fade') { updateFade(); return; }
 
     // update player movement and canvas scroll when on map mode
     PL.update();
-    if (PL.oldX !== PL.x || PL.oldY !== PL.y) {
+    if (PL.oldX !== PL.x || PL.oldY !== PL.y)
         CV.update(PL);
-    }
+    
 
     updateMapInteraction();
 }
@@ -174,28 +181,20 @@ export function drawDay3() {
     CV.clearAndDraw();
 
     // show interact prompt when player is in range of the current stage object
-    if (canInteract()) {
-        drawInteractPrompt();
-    }
+    if (canInteract()) drawInteractPrompt();
 
     // draw hitboxes on top of everything else when debug mode is enabled
-    if (GAME_CONFIG.DEBUG_HITBOXES) {
-        drawHitbox();
-    }
+    if (GAME_CONFIG.DEBUG_HITBOXES) drawHitbox();
 
     // overlay the fade-to-black while transitioning between stages
-    if (state.mode == 'fade') {
-        drawFade();
-    }
+    if (state.mode == 'fade') drawFade();
 }
 
 /**
  * Callback for checking day 3 completion status.
  * @returns {boolean} true when the day's final fade and ending sequence are complete
  */
-export function isDay3Complete() {
-    return state.done;
-}
+export function isDay3Complete() { return state.done; }
 
 // +++++++++++++++++ Asset Setup ++++++++++++++++++++
 
@@ -203,22 +202,22 @@ export function isDay3Complete() {
  * Builds and assigns all image and audio assets needed for day 3 tasks.
  * Populates the task and dayAudio objects.
  */
-function buildTaskAssets() {
+function build() {
     // set up looping ambience and one-shot ambient sound effects
     dayAudio.ambience = new Audio(audioAssets.ambience);
     dayAudio.ambience.loop = true;
-    dayAudio.ambience.volume = 0.55;
+    dayAudio.ambience.volume = ambienceVol;
     dayAudio.waterDrop = new Audio(audioAssets.waterDrop);
-    dayAudio.waterDrop.volume = 0.8;
+    dayAudio.waterDrop.volume = waterVol;
     dayAudio.knocking = new Audio(audioAssets.knocking);
-    dayAudio.knocking.volume = 1;
+    dayAudio.knocking.volume = knockVol;
 
     // set up ending tracks
     dayAudio.end = new Audio(audioAssets.end);
-    dayAudio.end.volume = 1;
+    dayAudio.end.volume = endVol;
     dayAudio.endIdle = new Audio(audioAssets.endIdle);
     dayAudio.endIdle.loop = true;
-    dayAudio.endIdle.volume = 1;
+    dayAudio.endIdle.volume = endingVol;
 
     // sticky note task only needs a single close-up image
     task.sticky = {
@@ -273,9 +272,9 @@ function buildTaskAssets() {
  * @returns {HTMLImageElement} the image element with src set
  */
 function makeImage(path) {
-    const image = new Image();
-    image.src = path;
-    return image;
+    const img = new Image();
+    img.src = path;
+    return img;
 }
 
 // +++++++++++++++++ Audio ++++++++++++++++++++
@@ -283,7 +282,7 @@ function makeImage(path) {
 /**
  * Resets the water drop timer and starts the day 3 ambience track from the beginning.
  */
-function startDay3Audio() {
+function startAudio() {
     dayAudio.waterDropTimerMs = 0;
 
     // catch edge case: ambience not built
@@ -336,7 +335,7 @@ export function stopDay3() {
 /**
  * Attach mouse listeners to canvas
  */
-function installMouseListeners() {
+function attachListeners() {
     removeMouseListeners();
 
     // track scaled mouse position relative to canvas
@@ -349,17 +348,15 @@ function installMouseListeners() {
     listeners.mouseDown = () => {
         mouse.down = true;
         // only start a board drag while the board task is active
-        if (state.mode == 'task' && state.currentTask == 'board') {
+        if (state.mode == 'task' && state.curTask == 'board')
             startBoardDrag();
-        }
     };
 
     listeners.mouseUp = () => {
         mouse.down = false;
         // only resolve a board drag while the board task is active
-        if (state.mode == 'task' && state.currentTask == 'board') {
+        if (state.mode == 'task' && state.curTask == 'board')
             stopBoardDrag();
-        }
     };
 
     CV.CANVAS.addEventListener('mousemove', listeners.mouseMove);
@@ -410,10 +407,10 @@ function canInteract() {
     if (!hitbox) return false;
 
     // AABB overlap check between player and hitbox
-    return PL.x < hitbox.x + hitbox.w &&
-        PL.x + PL.w > hitbox.x &&
-        PL.y < hitbox.y + hitbox.h &&
-        PL.y + PL.h > hitbox.y;
+    return (PL.x < hitbox.x + hitbox.w) &&
+        (PL.x + PL.w > hitbox.x) &&
+        (PL.y < hitbox.y + hitbox.h) &&
+        (PL.y + PL.h > hitbox.y);
 }
 
 /**
@@ -421,7 +418,7 @@ function canInteract() {
  * @returns {string} the current stage name
  */
 function getStage() {
-    return stageOrder[state.stageIndex];
+    return stageOrder[state.stageIdx];
 }
 
 /**
@@ -445,27 +442,24 @@ function getHitboxName() {
  */
 function startTask(taskName) {
     state.mode = 'task';
-    state.currentTask = taskName;
+    state.curTask = taskName;
     state.eWasDown = true; // prevent the same E press from immediately completing the task
 
     // only board and closet tasks need initialization
-    if (taskName == 'board') {
-        resetBoardTask();
-    } else if (taskName == 'closet') {
-        resetClosetTask();
-    }
+    if (taskName == 'board') resetBoardTask();
+    else if (taskName == 'closet') resetClosetTask();
 }
 
 /**
  * Marks current task as complete and advances stage 
  */
 function completeTask() {
-    state.currentTask = null;
-    state.stageIndex++;
+    state.curTask = null;
+    state.stageIdx++;
     state.eWasDown = true; // prevent immediate re-interaction on the next map frame
 
     // begin fade to ending if stages/tasks done
-    if (state.stageIndex >= stageOrder.length) {
+    if (state.stageIdx >= stageOrder.length) {
         state.mode = 'fade';
         state.fadeAlpha = 0;
         return;
@@ -482,7 +476,7 @@ function completeTask() {
 /**
  * places player at the starting position near bed
  */
-function placePlayerNearBed() {
+function tpBed() {
     placePlayer(1220, 700);
 }
 
@@ -492,16 +486,11 @@ function placePlayerNearBed() {
  */
 function placePlayerForStage(stage) {
     // check task to place player after completion
-    if (stage == 'board') {
-        placePlayer(900, 280);
-        return;
-    } else if (stage == 'closet') {
-        placePlayer(1450, 480);
-        return;
-    }
+    if (stage == 'board') { placePlayer(900, 280); return; } 
+    else if (stage == 'closet') { placePlayer(1450, 480); return; }
 
     // default to the bed position for any other stage
-    placePlayerNearBed();
+    tpBed();
 }
 
 /**
@@ -524,18 +513,18 @@ function placePlayer(x, y) {
  * Call update callback to task handler of current task
  */
 function updateTask() {
-    if (state.currentTask == 'sticky') updateSticky();
-    if (state.currentTask == 'board') updateBoard();
-    if (state.currentTask == 'closet') updateCloset();
+    if (state.curTask == 'sticky') updateSticky();
+    if (state.curTask == 'board') updateBoard();
+    if (state.curTask == 'closet') updateCloset();
 }
 
 /**
  * Call draw callback to task handler of current task
  */
 function drawTask() {
-    if (state.currentTask == 'sticky') drawSticky();
-    if (state.currentTask == 'board') drawBoard();
-    if (state.currentTask == 'closet') drawCloset();
+    if (state.curTask == 'sticky') drawSticky();
+    if (state.curTask == 'board') drawBoard();
+    if (state.curTask == 'closet') drawCloset();
 }
 
 // +++++++++++++++++ Sticky Task ++++++++++++++++++++
@@ -549,9 +538,7 @@ function updateSticky() {
     state.eWasDown = eDown;
 
     // complete the task on a fresh E press
-    if (eTapped) {
-        completeTask();
-    }
+    if (eTapped) completeTask(); 
 }
 
 /**
@@ -633,7 +620,8 @@ function startBoardDrag() {
     for (let i = task.board.boards.length - 1; i >= 0; i--) {
         const board = task.board.boards[i];
         // skip boards already placed or not under the cursor
-        if (board.placed || !pointInRect(mouse.x, mouse.y, board)) continue;
+        if (board.placed || !pointInRect(mouse.x, mouse.y, board)) 
+            continue;
 
         task.board.draggingIndex = i;
         task.board.dragOffsetX = mouse.x - board.x;
@@ -675,8 +663,10 @@ function stopBoardDrag() {
  * @returns {boolean}
  */
 function pointInRect(x, y, rect) {
-    return x >= rect.x && x <= rect.x + rect.w &&
-        y >= rect.y && y <= rect.y + rect.h;
+    return (x >= rect.x) &&
+        (x <= rect.x + rect.w) &&
+        (y >= rect.y) && 
+        (y <= rect.y + rect.h);
 }
 
 /**
@@ -686,9 +676,7 @@ function drawBoard() {
     CV.BRUSH.drawImage(task.board.background, 0, 0, CV.WIDTH, CV.HEIGHT);
 
     // draw each board piece with its current position and rotation
-    for (const board of task.board.boards) {
-        drawBoardPiece(board);
-    }
+    for (const board of task.board.boards) drawBoardPiece(board);
 
     drawPromptText(`drag boards to barricade the window    ${task.board.boards.filter(board => board.placed).length} / 3`);
 }
@@ -743,9 +731,7 @@ function updateCloset() {
     if (closet.failed || closet.finished) {
         closet.endDelay += GAME_CONFIG.REFRESH_INTERVAL_MS;
         // advance after a 1 second delay following pass or fail
-        if (closet.endDelay >= 1000) {
-            completeTask();
-        }
+        if (closet.endDelay >= 1000) completeTask();
         return;
     }
 
@@ -830,7 +816,7 @@ function shuffleKeys() {
     const keys = ['W', 'A', 'S', 'D'];
 
     // shuffle key press sequence using Fisher-Yates shuffle
-    for (let i = keys.length - 1; i > 0; i--) {
+    for (let i = keys.length-1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [keys[i], keys[j]] = [keys[j], keys[i]];
     }
